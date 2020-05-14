@@ -1,84 +1,87 @@
-# PostgreSQL
+# vuerd-vscode
 
-This is a query tool for PostgreSQL databases.  While there is a database explorer it is _NOT_ meant for creating/dropping databases or tables.  The explorer is a visual aid for helping to craft your queries.
+> [vuerd](https://github.com/vuerd/vuerd) ERD Editor vscode extension
 
-There is a language service that should keep at most a single connection open to the database (assuming one was selected).  This facilitates query diagnostics, code completion, and function signatures.  All code completion keywords, functions, tables, and field names are pulled from the current connection to try to keep everything relevant.
+[![npm version](https://img.shields.io/npm/v/vuerd.svg?color=blue)](https://www.npmjs.com/package/vuerd) [![VS Marketplace version](https://vsmarketplacebadge.apphb.com/version-short/dineug.vuerd-vscode.svg?color=blue)](https://marketplace.visualstudio.com/items?itemName=dineug.vuerd-vscode) [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/vuerd) [![GitHub](https://img.shields.io/github/license/vuerd/vuerd)](https://github.com/vuerd/vuerd/blob/master/LICENSE)
 
-It is possible there are some queries that won't run and report problems - even if they are completely valid (`DROP DATABASE` comes to mind).
+## ERD
 
-> *__Note__: PostgreSQL versions before 9.4 are not supported.*
+![vuerd](https://github.com/vuerd/vuerd/blob/master/img/vuerd-erd.gif?raw=true)
 
-## Features
+## SQL DDL
 
-* Management of PostgreSQL connections
-* List Servers/Database/Functions/Tables/Columns (primary key/type)
-* Quickly select top * (with limit) of a table
-* Run Queries
-  * All queries in a pgsql file (; delimited)
-  * Selected query in pgsql file
-  * Selected query in ANY file (via context menu or command palette)
-* Individual editors can have different connections
-* Quickly change connection database by clicking the DB in the status bar
-* Syntax Highlighting
-* Connection aware code completion (keywords, functions, tables, and fields)
-* In-line error detection powered by EXPLAIN (one error per query in editor)
-* *__Basic__* function signature support (connection aware)
+![vuerd](https://github.com/vuerd/vuerd/blob/master/img/vuerd-ddl.gif?raw=true)
+
+## Generator Code
+
+![vuerd](https://github.com/vuerd/vuerd/blob/master/img/vuerd-generator-code.gif?raw=true)
+
+## Visualization
+
+![vuerd](https://github.com/vuerd/vuerd/blob/master/img/vuerd-visualization.gif?raw=true)
+
+## SQL DDL Import
+
+![vuerd](https://github.com/vuerd/vuerd/blob/master/img/vuerd-ddl-import.gif?raw=true)
 
 ## Usage
 
-### Managing Connections
+1. ERD data [filename].vuerd.json Save a file as a form
+1. Focus on the saved file and click the vuerd icon in the upper right corner of the Editor window  
+   ![Image](./img/vuerd-vscode-1.png)  
+   ![Image](./img/vuerd-vscode-2.png)
 
-You can add a PostgreSQL connection in the explorer or via the command palette command "PostgreSQL: Add Connection"
+## Document
 
-![connection](images/add_connection.gif)
+- [Live Demo](https://vuerd.github.io/vuerd/)
 
-You can remove connections from the connection context menu or the command palette command "PostgreSQL: Delete Connection".
+## Editor Keymap(default)
 
-![delete_connection](images/delete_connection.gif)
+| Name                                                | Keymap                                                                   |
+| --------------------------------------------------- | ------------------------------------------------------------------------ |
+| Editing - ERD                                       | dblclick, Enter                                                          |
+| Editing - Grid                                      | dblclick, Enter                                                          |
+| All Stop                                            | Escape                                                                   |
+| Search - find, filter                               | Ctrl + Alt + F                                                           |
+| Undo - ERD                                          | Ctrl + Z                                                                 |
+| Redo - ERD                                          | Ctrl + Shift + Z                                                         |
+| Selection - table, memo                             | Ctrl + Drag, Click, Ctrl + Click, Ctrl + Alt + A                         |
+| Selection - column, filter                          | Click, Ctrl + Click, Shift + Click, Shift + Arrow key(up, down), Alt + A |
+| Movement - table, memo, column, filter              | Drag, Ctrl + Drag                                                        |
+| Copy - column                                       | Ctrl + C                                                                 |
+| Paste - column                                      | Ctrl + V                                                                 |
+| Contextmenu - ERD, Relationship, SQL, GeneratorCode | Right-click                                                              |
+| New Table                                           | Alt + N                                                                  |
+| New Memo                                            | Alt + M                                                                  |
+| New - column, filter                                | Alt + Enter                                                              |
+| Delete - table, memo                                | Ctrl + Delete                                                            |
+| Delete - column, filter                             | Alt + Delete                                                             |
+| Select Hint - dataType, find                        | Arrow key(right), Click                                                  |
+| Move Hint - dataType, find                          | Arrow key(up, down)                                                      |
+| Primary Key                                         | Alt + K                                                                  |
+| checkbox - Grid, filter                             | Space, Click                                                             |
+| Move checkbox - Grid, filter                        | Arrow key(up, down, left, right)                                         |
+| Relationship - Zero One N                           | Ctrl + Alt + 1                                                           |
+| Relationship - Zero One                             | Ctrl + Alt + 2                                                           |
+| Relationship - Zero N                               | Ctrl + Alt + 3                                                           |
+| Relationship - One Only                             | Ctrl + Alt + 4                                                           |
+| Relationship - One N                                | Ctrl + Alt + 5                                                           |
+| Relationship - One                                  | Ctrl + Alt + 6                                                           |
+| Relationship - N                                    | Ctrl + Alt + 7                                                           |
 
-Each item in the explorer has it's own context menu, and you can start a new query from _any_ level (or the command palette "PostgreSQL: New Query").
+## TODO
 
-The "Refresh Items" option reloads the sub-nodes for that item, useful if there were structural changes to the database and you want the explorer to reflect them.
+- [x] Undo, Redo Manager
+- [x] Grid filter
+- [x] ERD Table finder
+- [ ] Real-time simultaneous editing api
+- [ ] SQL index Support [#9](https://github.com/vuerd/vuerd-vscode/issues/9)
+- SQL DDL import Support [#7](https://github.com/vuerd/vuerd-vscode/issues/7)
+  - [ ] Oracle
+  - [ ] MSSQL
+  - [ ] PostgreSQL
+- [ ] SQL-Query generator [#3](https://github.com/vuerd/vuerd/issues/3)
 
-Tables have the extra option to "Select Top 1000" or "Select Top...". They both open a new query with a "SELECT *" query started and run it.  The latter option will prompt you for the quantity first.
+## License
 
-### Running Queries
-
-Each editor window can have a different database and/or connection used for its queries.  All windows start with no connection selected.
-
-![status](images/current_connection.png)
-
-Clicking on the server ("localhost" above) or the database name will allow you to quickly change the database.  You can also initiate the change from the command palette.
-
-Windows with their language set to Postgres will get syntax highlighting, and when there is connection selected: code completion, signature information, and diagnostics.
-
-In Postgres language files you can run a query via F5, context menu, or command palette.  You can also run a query from any other file type as long as a connection is selected and you have the query selected - __*F5 will not work for other file types*__.
-
-![run_queries](images/run_queries.gif)
-
-Running queries in Postgres language files first check if anything is selected. If there is a selection, that is run as the query, otherwise all the queries in the editor are run.
-
-Multiple queries are supported. If there is output from more than one query, multiple tables are shown in the results window.
-
-### Serializing Query Results
-
-You can serialize your query results as well.
-
-![save_results](images/save_results.png)
-
-If you have more than one table of results, you will be prompted for the table you wish to serialize.
-
-You can choose from three formats: json, xml, and csv.  The results will be converted to the appropriate format and opened in a new editor of the selected type.
-
-## Extension Settings
-
-This extension contributes the following settings:
-
-* `vscode-postgres.showExplorer`: enable/disable the database explorer.
-* `vscode-postgres.prettyPrintJSONfields`: set to `true` to enable nicely formatted JSON in the query results window.
-* `vscode-postgres.setConnectionFromExplorer`: set to `ifunset` to only set the query connection if not already set.
-* `vscode-postgres.tableColumnSortOrder`: set to `db-order` to sort columns like the database does, `alpha` to sort alphabetically, and `reverse-alpha` for descending alphabetically.
-* `vscode-postgres.intervalFormat`: set to `iso_8601` to format intervals according to the ISO 8601 standard, `humanize` to format as easy to read text, and `succinct` to format like a countdown clock.
-* `vscode-postgres.virtualFolders`: set to array of virtual folders to be displayed under schema. Supported values for virtual folders are `functions`. Set to `null` or empty array `[]` to disable virtual folders.
-* `vscode-postgres.defaultConnection`: set the default connection (by name) that should be used for any file.
-* `vscode-postgres.defaultDatabase`: set the default database on the default connection that should be used for any file (must exist on server).
+[MIT](https://github.com/vuerd/vuerd-vscode/blob/master/LICENSE)

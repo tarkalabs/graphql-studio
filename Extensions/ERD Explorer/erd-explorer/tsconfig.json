@@ -1,18 +1,17 @@
 {
   "compilerOptions": {
+    "lib": ["es6", "dom", "es2016", "esnext", "dom.iterable", "scripthost"],
+    "types": ["node"],
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "out",
     "module": "commonjs",
     "target": "es6",
-    "outDir": "out",
-    "lib": [
-			"es6",
-			"es2015.promise",
-			"dom"
-		],
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "rootDir": "src"
+    "strict": true
   },
-  "exclude": [
-    "node_modules",
-    ".vscode-test"
-  ]
+  "include": ["src/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

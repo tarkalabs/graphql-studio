@@ -6,44 +6,45 @@
 	"version": "0.2.0",
 	"configurations": [
         {
-            "name": "Run ERD Explorer",
+            "name": "Run ERD Generator",
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
 				"${workspaceRoot}",
-				"--extensionDevelopmentPath=${workspaceRoot}/Extensions/ERD Explorer" 
+				"--extensionDevelopmentPath=${workspaceRoot}/Extensions/ERD Explorer/erd-generator" 
 			],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outFiles": [ "${workspaceRoot}/Extensions/ERD Explorer/out/**/*.js" ],
+            "outFiles": [ "${workspaceRoot}/Extensions/ERD Explorer/erd-generator/out/**/*.js" ],
             "preLaunchTask": "npm: watch"
         },
         {
-            "name": "Test ERD Explorer",
+            "name": "Test ERD Generator",
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
 				"${workspaceRoot}",
-				"--extensionDevelopmentPath=${workspaceRoot}/Extensions/ERD Explorer", 
-				"--extensionTestsPath=${workspaceRoot}/Extensions/ERD Explorer/out/test" 
+				"--extensionDevelopmentPath=${workspaceRoot}/Extensions/ERD Explorer/erd-generator", 
+				"--extensionTestsPath=${workspaceRoot}/Extensions/ERD Explorer/erd-generator/out/test" 
 			],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outFiles": [ "${workspaceRoot}/Extensions/ERD Explorer/out/test/**/*.js" ],
+            "outFiles": [ "${workspaceRoot}/Extensions/ERD Explorer/erd-generator/out/test/**/*.js" ],
             "preLaunchTask": "npm: watch"
         },
         {
-            "type": "node",
-            "request": "attach",
-            "name": "Attach to Langauge Server",
-            "protocol": "inspector",
-            "port": 6005,
-            "sourceMaps": true,
-            "outFiles": [
-                "${workspaceRoot}/Extensions/ERD Explorer/out/**/*.js"
-            ]
-        }
+			"name": "Run ERD Explorer",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceRoot}",
+                "--extensionDevelopmentPath=${workspaceRoot}/Extensions/ERD Explorer/erd-explorer", 
+            ],
+			"outFiles": ["${workspaceFolder}/Extensions/ERD Explorer/erd-explorer/out/**/*.js"],
+			"preLaunchTask": "npm: watch"
+		}
 	]
 }
