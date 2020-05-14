@@ -1,0 +1,5 @@
+%syntax-version=1.0.0
+%project=example
+%uri=https://github.com/sqitchers/sqitch-intro/
+
+appschema 2020-05-13T14:31:03Z carreath <caleb.reath@tarkalabs.com> # Add schema for all dvdrental objects.

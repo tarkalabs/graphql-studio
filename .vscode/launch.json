@@ -5,34 +5,45 @@
 {
 	"version": "0.2.0",
 	"configurations": [
-		{
-			"name": "Run ERD Explorer",
-			"type": "extensionHost",
-			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/ERD Explorer/erd-explorer",
-				"--extensionDevelopmentPath=${workspaceFolder}/ERD Explorer/erd-explorer"
+        {
+            "name": "Run ERD Explorer",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+				"${workspaceRoot}",
+				"--extensionDevelopmentPath=${workspaceRoot}/Extensions/ERD Explorer" 
 			],
-			"outFiles": [
-				"${workspaceFolder}/ERD Explorer/erd-explorer/out/**/*.js"
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "outFiles": [ "${workspaceRoot}/Extensions/ERD Explorer/out/**/*.js" ],
+            "preLaunchTask": "npm: watch"
+        },
+        {
+            "name": "Test ERD Explorer",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+				"${workspaceRoot}",
+				"--extensionDevelopmentPath=${workspaceRoot}/Extensions/ERD Explorer", 
+				"--extensionTestsPath=${workspaceRoot}/Extensions/ERD Explorer/out/test" 
 			],
-			"preLaunchTask": "${defaultBuildTask}"
-		},
-		{
-			"name": "Test ERD Explorer",
-			"type": "extensionHost",
-			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/ERD Explorer/erd-explorer",
-				"--extensionDevelopmentPath=${workspaceFolder}/ERD Explorer/erd-explorer",
-				"--extensionTestsPath=${workspaceFolder}/ERD Explorer/erd-explorer/out/test/suite/index"
-			],
-			"outFiles": [
-				"${workspaceFolder}/ERD Explorer/erd-explorer/out/test/**/*.js"
-			],
-			"preLaunchTask": "${defaultBuildTask}"
-		}
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "outFiles": [ "${workspaceRoot}/Extensions/ERD Explorer/out/test/**/*.js" ],
+            "preLaunchTask": "npm: watch"
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Langauge Server",
+            "protocol": "inspector",
+            "port": 6005,
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceRoot}/Extensions/ERD Explorer/out/**/*.js"
+            ]
+        }
 	]
 }
