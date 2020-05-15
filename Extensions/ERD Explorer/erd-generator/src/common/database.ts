@@ -96,6 +96,10 @@ export class Database {
   }
 
   public static async runQuery(sql: string, editor: vscode.TextEditor, connectionOptions: IConnection) {
+    this.runQuery_ext(sql, editor, connectionOptions, null);
+  }
+
+  public static async runQuery_ext(sql: string, editor: vscode.TextEditor, connectionOptions: IConnection, callback: Function) {
     let uri = editor.document.uri.toString();
     let title = path.basename(editor.document.fileName);
     let resultsUri = vscode.Uri.parse('postgres-results://' + uri);
@@ -117,8 +121,13 @@ export class Database {
           }
         });
       });
-      await OutputChannel.displayResults(resultsUri, 'Results: ' + title, results);
-      vscode.window.showTextDocument(editor.document, editor.viewColumn);
+
+      if (callback) {
+        callback(results);
+      } else {
+        await OutputChannel.displayResults(resultsUri, 'Results: ' + title, results);
+        vscode.window.showTextDocument(editor.document, editor.viewColumn);
+      }
     } catch (err) {
       OutputChannel.appendLine(err);
       vscode.window.showErrorMessage(err.message);

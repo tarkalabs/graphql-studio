@@ -146,6 +146,11 @@
         "category": "PostgreSQL"
       },
       {
+        "command": "vscode-postgres.generateERD",
+        "title": "Generate ER Diagram",
+        "category": "PostgreSQL"
+      },
+      {
         "command": "vscode-postgres.refresh",
         "title": "Refresh Items",
         "category": "PostgreSQL"
@@ -272,6 +277,11 @@
         },
         {
           "command": "vscode-postgres.newQuery",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.database",
+          "group": "postgres@1"
+        },
+        {
+          "command": "vscode-postgres.generateERD",
           "when": "view == postgres && viewItem == vscode-postgres.tree.database",
           "group": "postgres@1"
         },
