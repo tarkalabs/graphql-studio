@@ -10,7 +10,11 @@ SELECT 'postgresql' AS dbms,
 		n.constraint_type,
 		k2.table_schema,
 		k2.table_name,
-		k2.column_name 
+		k2.column_name,
+		case c.is_nullable
+            when 'NO' then true
+            when 'YES' then false
+       end as nullable
 	FROM information_schema.tables t 
 	NATURAL LEFT JOIN information_schema.columns c 
 	LEFT JOIN(

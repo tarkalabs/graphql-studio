@@ -100,9 +100,15 @@ export class Database {
   }
 
   public static async runQuery_ext(sql: string, editor: vscode.TextEditor, connectionOptions: IConnection, callback: Function) {
-    let uri = editor.document.uri.toString();
-    let title = path.basename(editor.document.fileName);
-    let resultsUri = vscode.Uri.parse('postgres-results://' + uri);
+    let uri = null;
+    let title = null
+    let resultsUri = null;
+
+    if (!callback) {
+      uri = editor.document.uri.toString();
+      title = path.basename(editor.document.fileName);
+      resultsUri = vscode.Uri.parse('postgres-results://' + uri);
+    }
 
     let connection: PgClient = null;
     try {

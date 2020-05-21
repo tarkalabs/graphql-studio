@@ -31,6 +31,15 @@
           "Postgres"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "vuerd",
+        "extensions": [
+          ".vuerd.json"
+        ],
+        "aliases": [
+          "vuerd"
+        ]
       }
     ],
     "grammars": [
