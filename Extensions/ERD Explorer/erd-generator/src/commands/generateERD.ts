@@ -11,6 +11,14 @@ let uniqueTableId = 0;
 let uniqueColumnId = 0;
 let uniqueRelationshipId = 0;
 
+let positionIndex = -1;
+let columnCount = 5;
+let rowCount = 5;
+let width = 2000;
+let height = 2000;
+let columnWidth = width/columnCount;
+let rowHeight = height/rowCount;
+
 let tableIdMap = {};
 let relationshipMap = {};
 let relationshipIndexMap = {};
@@ -186,8 +194,8 @@ export class generateERDCommand extends BaseCommand {
 
     let vuerdFile = {
       "canvas": {
-        "width": 2000,
-        "height": 2000,
+        "width": width,
+        "height": height,
         "scrollTop": 0,
         "scrollLeft": 0,
         "show": {
@@ -220,17 +228,30 @@ export class generateERDCommand extends BaseCommand {
     };
 
     if (fs.existsSync(path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'))) {
-      fs.unlinkSync(path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'));
+      //fs.unlinkSync(path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'));
     }
-    const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'));
+    let newFile = null;
+    
+    if (fs.existsSync(path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'))) {
+      newFile = vscode.Uri.parse(path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'));
+      //fs.unlinkSync(path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'));
+    } else {
+      newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'ERD.vuerd.json'));
+    }
 
     vscode.workspace.openTextDocument(newFile).then(document => {
       const edit = new vscode.WorkspaceEdit();
-      edit.insert(newFile, new vscode.Position(0, 0), JSON.stringify(vuerdFile));
+      edit.replace(newFile, new vscode.Range(0, 0, 999999, 999999), JSON.stringify(vuerdFile));
+      //edit.insert(newFile, new vscode.Position(0, 0), JSON.stringify(vuerdFile));
       vscode.workspace.applyEdit(edit).then(success => {
         if (success) {
+          vscode.window.showTextDocument(document).then(() => {
             document.save();
-            vscode.window.showTextDocument(document);
+          });
+          //document.save().then(()=>{
+          //  vscode.window.showTextDocument(document);
+          //});
+          //vscode.window.showTextDocument(vscode.Uri.parse(path.join(vscode.workspace.rootPath, 'ERD.vuerd.json')));
         } else {
             vscode.window.showInformationMessage('Error!');
         }
@@ -248,6 +269,8 @@ export class generateERDCommand extends BaseCommand {
       columns: {}
     };
 
+    positionIndex++;
+
     return {
       "name": name,
       "comment": comment,
@@ -256,8 +279,8 @@ export class generateERDCommand extends BaseCommand {
       ],
       "ui": {
         "active": true,
-        "left": 120.5,
-        "top": 126.5,
+        "left": columnWidth * Math.floor(positionIndex%columnCount) + 50,
+        "top": rowHeight * Math.floor(positionIndex/columnCount) + 50,
         "zIndex": 101,
         "widthName": (name.length - name.replace(/\./gi, "").length) * charSizes.period + 
                       (name.length - name.replace(/_/gi, "").length) * charSizes.underscore + 
@@ -325,10 +348,10 @@ export class generateERDCommand extends BaseCommand {
   }
 
   newRelationship(results : SchemaResults, index : number) {
-    let startTableName = results.rows[index][3];
-    let endTableName = results.rows[index][10];
-    let startColumnName = results.rows[index][4];
-    let endColumnName = results.rows[index][11];
+    let startTableName = results.rows[index][10];
+    let endTableName = results.rows[index][3];
+    let startColumnName = results.rows[index][11];
+    let endColumnName = results.rows[index][4];
 
     let startId = tableIdMap[startTableName].id;
     let endId = tableIdMap[endTableName].id;
@@ -343,7 +366,18 @@ export class generateERDCommand extends BaseCommand {
     } else {
       if (relationshipMap[endId] && relationshipMap[endId] == startId) {
         let relationship = relationshipObjects[relationshipIndexMap[endId]] as VuerdRelationship;
-        relationship.relationshipType = VuerdRelationshipType.One;
+        if (results.rows[index][12]) {
+          relationship.end = relationship.start;
+          relationship.start = {
+            tableId: endId,
+            columnIds: [endColumnId],
+            x: 100,
+            y: 100,
+            direction: VuerdRelationshipDirection.top
+          }
+        }
+        relationship.relationshipType = VuerdRelationshipType.OneN 
+        relationshipObjects[relationshipIndexMap[endId]] = relationship;
       } else {
         relationshipMap[startId] = endId;
         relationshipIndexMap[startId] = relationshipObjects.length;
@@ -364,7 +398,7 @@ export class generateERDCommand extends BaseCommand {
             direction: VuerdRelationshipDirection.top
           },
           id: id,
-          relationshipType: VuerdRelationshipType.ZeroN
+          relationshipType: (results.rows[index][12])? VuerdRelationshipType.OneN: VuerdRelationshipType.ZeroN
         });
       }
     }
@@ -375,6 +409,7 @@ export class generateERDCommand extends BaseCommand {
     uniqueTableId = 0;
     uniqueColumnId = 0;
     uniqueRelationshipId = 0;
+    positionIndex = -1;
 
     tableIdMap = {};
     relationshipMap = {};

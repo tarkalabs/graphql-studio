@@ -12,8 +12,8 @@ SELECT 'postgresql' AS dbms,
 		k2.table_name,
 		k2.column_name,
 		case c.is_nullable
-            when 'NO' then true
-            when 'YES' then false
+            when 'NO' then 'N-N'
+            when 'YES' then 'NULL'
        end as nullable
 	FROM information_schema.tables t 
 	NATURAL LEFT JOIN information_schema.columns c 
@@ -34,4 +34,4 @@ SELECT 'postgresql' AS dbms,
 		WHERE 
 			t.TABLE_TYPE='BASE TABLE' AND 
 			t.table_schema 
-		NOT IN('information_schema','pg_catalog');
+		NOT IN('information_schema','pg_catalog','sqitch');
