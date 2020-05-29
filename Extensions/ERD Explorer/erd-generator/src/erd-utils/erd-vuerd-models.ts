@@ -4,6 +4,10 @@ import { CoreSchema, CoreRelationship, CoreTable, CoreColumn } from "../erd-util
 import { getTextWidth } from "./erd-core-utils";
 import { ErdConstants } from "../common/constants";
 
+/**
+ * Vuerd specific implementations of the Core Models
+ * primary responsability is to format the data into the vuerd json format
+ */
 export class VuerdSchema extends CoreSchema {
     stringify() {
         return JSON.stringify({

@@ -5,6 +5,15 @@ import * as models from "./erd-vuerd-models";
 
 export const ERD_FILE_EXTENSION = "vuerd.json";
 
+/**
+ * Vuerd Utility implementations
+ * VuerdUtils extends CoreUtils and simply allows
+ * the data to be instantiated to the Vuerd types
+ * rather than being a Partial abstract implementation
+ *
+ * Main responsibility is to instantiate data to the correct types
+ * to facillitate stringification in the final steps
+ */
 export class VuerdUtils extends CoreUtils {
     public newTable(row, model): models.VuerdTable {
         return new models.VuerdTable(super.newTable(row, model));

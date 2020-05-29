@@ -2,10 +2,19 @@
 
 import { CoreTable, CoreColumn, CoreRelationship, CoreRelationshipTypes, CoreSchema } from "./erd-core-models";
 
+/**
+ * ERD Explorer Core utilities
+ * these functions and utility models are used to store and mutate 
+ * results for temporary use.
+ */
+
 export interface ERDFile {
     json: Object;
 }
 
+/**
+ * Primary model that contains maps and arrays that define the Schema
+ */
 export class ERD_Model {    
     index: number;
     uniqueTableId: number;
@@ -13,6 +22,7 @@ export class ERD_Model {
     uniqueRelationshipId: number;
     positionIndex: number;
 
+    // Map to grab table if information instantly
     tableId : {
         [name: string]: {
             id: string, 
@@ -22,16 +32,20 @@ export class ERD_Model {
         }
     };
 
+    // Map to get IDs from either side of a relationship
     relationshipMap : {
         [id: string]: string
     };
 
+    // Map to get the index where the relationship object is stored
     relationshipIndex : {
         [id : string] : number
     };
 
+    // Array of relationships that require finalization
     toDoRelationships: Array<SchemaRow>;
 
+    // Primary data objects which get passed into CoreSchema objects
     rows: Array<Array<any>>;
     tables: Array<CoreTable>;
     relationships: Array<CoreRelationship>;
@@ -63,6 +77,7 @@ export class ERD_Model {
     }
 }
 
+// Helper to calculate the required width of text fields
 export function getTextWidth(text: string) {
     return (text.length - text.replace(/\./gi, "").length) * charSizes.period + 
     (text.length - text.replace(/_/gi, "").length) * charSizes.underscore + 
@@ -82,6 +97,7 @@ export enum charSizes {
     other = 7.1
 }
 
+// Data access object that makes raw row data access readable and controlled
 export class RowResult {
     public static dbms(row: Array<any>) {return row[0]}
     public static table_catalog(row: Array<any>) {return row[1]}
@@ -101,6 +117,10 @@ export class RowResult {
     public static notnull(row: Array<any>) {return row[12]}
 }
 
+/** CoreUtils defines the generic creation of the Schema from data rows
+ * Once extended by Vuerd or Mermaid or etc... Can be used to return the generic 
+ * core data objects prior to being formatted
+ */
 export class CoreUtils {
     newTable(row, model): Partial<CoreTable> {
         let name = RowResult.table_name(row);
@@ -170,6 +190,7 @@ export class CoreUtils {
 
         let id = startTableName + "." + startColumnName + "=>" + endTableName + "." + endColumnName + ":" + model.uniqueRelationshipId++;
         
+        // If relationship already exists modify it accordingly
         if (model.relationshipMap[endId] && model.relationshipMap[endId] == startId) {
             let relationship = model.relationships[model.relationshipIndex[endId]] as CoreRelationship;
             relationship.endId = relationship.startId;
@@ -180,6 +201,7 @@ export class CoreUtils {
             model.relationships[model.relationshipIndex[endId]] = relationship;
             return null;
         } else {
+            // New relationship usually many to zero or one
             model.relationshipMap[startId] = endId;
             model.relationshipIndex[startId] = model.relationships.length;
             return {

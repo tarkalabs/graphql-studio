@@ -1,5 +1,12 @@
 'use strict';
 
+/**
+ * Core models used to store all data returned from
+ * the SQL query.
+ * Once extended the data can be transformed to the correct output
+ * format by implementing the jsonify/stringify methods  
+ */
+
 export enum CoreRelationshipTypes {
     ZeroOneN = "ZeroOneN",
     ZeroOne = "ZeroOne",
