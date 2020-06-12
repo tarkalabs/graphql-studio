@@ -29,7 +29,7 @@ export abstract class CoreSchema extends CoreObject {
     tables: Array<CoreTable>
     relationships: Array<CoreRelationship>
 
-    abstract stringify() : string;
+    abstract stringify(...model) : string;
 }
 
 export abstract class CoreTable extends CoreObject {

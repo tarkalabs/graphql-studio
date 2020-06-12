@@ -31,6 +31,16 @@ export class ERD_Model {
             }
         }
     };
+    
+    // Map to grab table if information instantly
+    tableName : {
+        [id: string]: {
+            name: string, 
+            columnName: {
+                [id: string]: string
+            }
+        }
+    };
 
     // Map to get IDs from either side of a relationship
     relationshipMap : {
@@ -58,6 +68,7 @@ export class ERD_Model {
         this.positionIndex = 0;
 
         this.tableId = {};
+        this.tableName = {};
         this.relationshipMap = {};
         this.relationshipIndex = {};
         this.toDoRelationships = [];
@@ -130,6 +141,10 @@ export class CoreUtils {
             id: id, 
             columnId: {}
         };
+        model.tableName[id] = {
+            name: name, 
+            columnName: {}
+        };
 
         return {
             name: name,
@@ -147,6 +162,7 @@ export class CoreUtils {
         let fk = RowResult.constraint_fk(row);
         
         model.tableId[tableName].columnId[name] = id;
+        model.tableName[model.tableId[tableName].id].columnName[id] = name;
 
         if (fk) {
             model.toDoRelationships.push(row);
