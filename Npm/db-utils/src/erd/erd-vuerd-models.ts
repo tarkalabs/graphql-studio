@@ -1,14 +1,17 @@
 'use strict';
 
-import { CoreSchema, CoreRelationship, CoreTable, CoreColumn } from "../erd-utils/erd-core-models";
-import { getTextWidth } from "./erd-core-utils";
-import { ErdConstants } from "../common/constants";
+import { CoreSchema, CoreRelationship, CoreTable, CoreColumn } from "./erd-core-models";
+import { getTextWidth, ErdConstants } from "./erd-core-utils";
 
 /**
  * Vuerd specific implementations of the Core Models
  * primary responsability is to format the data into the vuerd json format
  */
 export class VuerdSchema extends CoreSchema {
+    create() {
+
+    }
+
     stringify() {
         return JSON.stringify({
             canvas: {
@@ -44,6 +47,10 @@ export class VuerdSchema extends CoreSchema {
                 "relationships": this.relationships.map((relationship)=>relationship.jsonify())
             }
         });
+    }
+
+    htmlify() {
+        return "";
     }
 }
 

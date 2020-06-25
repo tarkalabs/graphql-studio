@@ -1,14 +1,4 @@
-import BaseCommand from "../common/baseCommand";
-import * as vscode from 'vscode';
-import { Database } from "../common/database";
-import * as path from 'path';
-import * as fs from 'fs';
-import { MermaidUtils, MermaidSchema, getHtmlContent, getStructure } from "db-utils";
-import { Connection } from "db-utils/out/db/connection";
-
-'use strict';
-
-let HTML = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
   <head>
@@ -83,7 +73,7 @@ let HTML = `<!DOCTYPE html>
 
 
     </div>
-    <!--script>
+    <script>
       $(document).ready(function() {
         clicked("full");
       });
@@ -132,7 +122,7 @@ let HTML = `<!DOCTYPE html>
         return erd;
       }
       var root = "address";
-      var erdRaw = \`language ||..|{ film : "a"
+      var erdRaw = `language ||..|{ film : "a"
         city ||..|{ address : "a"
         country ||..|{ city : "a"
         address ||..|{ customer : "a"
@@ -149,7 +139,7 @@ let HTML = `<!DOCTYPE html>
         address ||..|{ store : "a"
         staff ||..|{ payment : "a"
         rental ||..|{ payment : "a"
-        customer ||..|{ payment : "a"\`;
+        customer ||..|{ payment : "a"`;
       var erd = parse(erdRaw);
       var currentERD = "";
       var getMermaid = function(name) {
@@ -189,7 +179,7 @@ let HTML = `<!DOCTYPE html>
         }
       }
 
-    </script-->
+    </script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
@@ -197,132 +187,3 @@ let HTML = `<!DOCTYPE html>
 
 </html>
 
-`;
-export class generateERDCommand extends BaseCommand {
-	async run() {
-		Connection.setup({
-			label:"Localhost",
-			host:"127.0.0.1",
-			user:"dev",
-			password:"1234",
-			port:5432,
-			database:"example"
-		  });
-		  
-		// Get the structure of the DB
-		let results = undefined; //getStructure();
-
-		if (vscode.window.registerWebviewPanelSerializer) {
-			// Make sure we register a serializer in activation event
-			vscode.window.registerWebviewPanelSerializer("ERD", {
-				async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-					console.log(`Got state: ${state}`);
-					return ERDPanel.revive(webviewPanel, this.context.extensionPath, HTML); //await this.getHtml(results));
-				}
-			});
-		}
-
-		// Display the webview
-		return this.showERD(results);
-	}
-
-		// Save ERD in a file
-	async showERD(sqlResults) {
-		let html = HTML; //await this.getHtml(sqlResults);
-
-		ERDPanel.createOrShow(this.context.extensionPath, html);
-	}
-
-	async getHtml(sqlResults) {
-		return await getHtmlContent(new MermaidSchema(), new MermaidUtils(), sqlResults)
-	}
-}
-
- class ERDPanel {
-	public static currentPanel: ERDPanel | undefined;
-
-	public static readonly viewType = 'catCoding';
-
-	private readonly _panel: vscode.WebviewPanel;
-	private readonly _extensionPath: string;
-	private _disposables: vscode.Disposable[] = [];
-
-	public static createOrShow(extensionPath: string, html: string) {
-		const column = vscode.window.activeTextEditor
-			? vscode.window.activeTextEditor.viewColumn
-			: undefined;
-
-		// If we already have a panel, show it.
-		if (ERDPanel.currentPanel) {
-			ERDPanel.currentPanel._panel.reveal(column);
-			ERDPanel.currentPanel.setContent(html);
-			return;
-		}
-
-		// Otherwise, create a new panel.
-		const panel = vscode.window.createWebviewPanel(
-			ERDPanel.viewType,
-			'ERD',
-			column || vscode.ViewColumn.One,
-			{
-				// Enable javascript in the webview
-				enableScripts: true,
-
-				// And restrict the webview to only loading content from our extension's `media` directory.
-				localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'media'))]
-			}
-		);
-
-		ERDPanel.currentPanel = new ERDPanel(panel, extensionPath, html);
-	}
-
-	public static revive(panel: vscode.WebviewPanel, extensionPath: string, html: string) {
-		ERDPanel.currentPanel = new ERDPanel(panel, extensionPath, html);
-	}
-
-	private constructor(panel: vscode.WebviewPanel, extensionPath: string, html: string) {
-		this._panel = panel;
-		this._extensionPath = extensionPath;
-
-		// Listen for when the panel is disposed
-		// This happens when the user closes the panel or when the panel is closed programatically
-		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-		// Handle messages from the webview
-		this._panel.webview.onDidReceiveMessage(
-			message => {
-				switch (message.command) {
-					case 'alert':
-						vscode.window.showErrorMessage(message.text);
-						return;
-				}
-			},
-			null,
-			this._disposables
-		);
-	}
-
-	public sendMessage() {
-		// Send a message to the webview webview.
-		// You can send any JSON serializable data.
-		this._panel.webview.postMessage({ command: 'MyJsCommand' });
-	}
-
-	public dispose() {
-		ERDPanel.currentPanel = undefined;
-
-		// Clean up our resources
-		this._panel.dispose();
-
-		while (this._disposables.length) {
-			const x = this._disposables.pop();
-			if (x) {
-				x.dispose();
-			}
-		}
-	}
-
-	public setContent(html) {
-		this._panel.webview.html = html;
-	}
-}

@@ -29,7 +29,12 @@ export abstract class CoreSchema extends CoreObject {
     tables: Array<CoreTable>
     relationships: Array<CoreRelationship>
 
+    public create(init?: Partial<CoreObject>) {
+        Object.assign(this, init);
+    }
+
     abstract stringify(...model) : string;
+    abstract htmlify(...model) : string;
 }
 
 export abstract class CoreTable extends CoreObject {

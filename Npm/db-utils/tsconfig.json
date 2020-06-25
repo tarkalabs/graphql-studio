@@ -9,10 +9,12 @@
 			"dom"
 		],
     "sourceMap": true,
-    "rootDir": "src"
+    "rootDir": "src",
+    "declaration": true
   },
   "exclude": [
     "node_modules",
-    ".vscode-test"
+    ".vscode-test",
+    "./out/**/*"
   ]
 }

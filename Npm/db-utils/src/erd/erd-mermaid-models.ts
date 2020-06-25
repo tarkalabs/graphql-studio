@@ -1,9 +1,12 @@
 'use strict';
 
 import { CoreSchema, CoreRelationship, CoreTable, CoreColumn, CoreRelationshipTypes } from "./erd-core-models";
-import { getTextWidth, ERD_Model } from "./erd-core-utils";
-import { ErdConstants } from "../common/constants";
+import { getTextWidth, ERD_Model, ErdConstants } from "./erd-core-utils";
+import {readFileSync} from "fs";
 
+/*
+ * TODO: Identifying Relationships
+*/
 const enum leftSideRelationships {
     ZeroN = "}o",
     ZeroOne = "|o",
@@ -30,32 +33,42 @@ export enum CddoreRelationshipTypes {
  * primary responsability is to format the data into the Mermaid format
  */
 export class MermaidSchema extends CoreSchema {
+    create(model: ERD_Model) {
+
+    }
+
     stringify(model: ERD_Model) {
         let out = "erDiagram\n";
-        this.relationships.map((relationship)=>{
-            let startTable = model.tableName[relationship.startId].name;
-            let endTable = model.tableName[relationship.endId].name;
-            switch (relationship.relationshipType) {
-                case CoreRelationshipTypes.N:
-                case CoreRelationshipTypes.ZeroN:
-                    out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroN + " " + endTable.replace("_", "") + "\"\"";
-                    break;
-                case CoreRelationshipTypes.ZeroOne:
-                case CoreRelationshipTypes.One:
-                    out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroOne + " " + endTable.replace("_", "") + " : \"\"";
-                    break;
-                case CoreRelationshipTypes.OneOnly:
-                    out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroOne + " " + endTable.replace("_", "") + " : \"\"";
-                    break;
-                case CoreRelationshipTypes.ZeroOneN:
-                case CoreRelationshipTypes.OneN:
-                    out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.OneN + " " + endTable.replace("_", "") + " : \"\"";
-                    break;
-            }
-            out += "\n";
-        });
+        if (this.relationships) {
+            this.relationships.map((relationship)=>{
+                let startTable = model.tableName[relationship.startId].name;
+                let endTable = model.tableName[relationship.endId].name;
+                switch (relationship.relationshipType) {
+                    case CoreRelationshipTypes.N:
+                    case CoreRelationshipTypes.ZeroN:
+                        out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroN + " " + endTable.replace("_", "") + "\"\"";
+                        break;
+                    case CoreRelationshipTypes.ZeroOne:
+                    case CoreRelationshipTypes.One:
+                        out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroOne + " " + endTable.replace("_", "") + " : \"\"";
+                        break;
+                    case CoreRelationshipTypes.OneOnly:
+                        out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroOne + " " + endTable.replace("_", "") + " : \"\"";
+                        break;
+                    case CoreRelationshipTypes.ZeroOneN:
+                    case CoreRelationshipTypes.OneN:
+                        out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.OneN + " " + endTable.replace("_", "") + " : \"\"";
+                        break;
+                }
+                out += "\n";
+            });
+        }
 
         return out;
+    }
+
+    htmlify(model: ERD_Model) {
+        return readFileSync(__dirname + "/../../html/ERD.html").toString();
     }
 }
 

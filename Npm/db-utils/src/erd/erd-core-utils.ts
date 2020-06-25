@@ -12,6 +12,130 @@ export interface ERDFile {
     json: Object;
 }
 
+/*
+  @author Caleb Reath 
+  Constants used by the ERDGenerator Command
+*/
+export class ErdConstants {
+    public static columnCount = 5;
+    public static rowCount = 5;
+    public static width = 2000;
+    public static height = 2000;
+    public static columnWidth = ErdConstants.width/ErdConstants.columnCount;
+    public static rowHeight = ErdConstants.height/ErdConstants.rowCount;
+  }
+
+interface MermaidInterface {
+    mermaidAPI: any;
+}   
+
+let model: ERD_Model;
+let utils: CoreUtils;
+
+declare global {
+    interface Window { mermaid: any; }
+    interface HTMLStyleElement { styleSheet: any; }
+}
+
+export async function getERDContent(schema : CoreSchema, newUtils: CoreUtils, sqlResults) {   
+  Generate_ERD_File.getSchema(schema, newUtils, sqlResults);
+
+  return schema.stringify(model); 
+}
+
+export async function getHtmlContent(schema : CoreSchema, newUtils: CoreUtils, sqlResults) {   
+  Generate_ERD_File.getSchema(schema, newUtils, sqlResults);
+
+  return schema.htmlify(model); 
+}
+
+export class Generate_ERD_File {
+  public static async getSchema(schema : CoreSchema, newUtils: CoreUtils, sqlResults) {
+    model = new ERD_Model();
+    model.rows = sqlResults[1].rows;
+    utils = newUtils;
+
+    // parse results into Core Models
+    this.parseRows();
+
+    // After every table/column is parsed then finalize the relationships
+    this.finalizeRelationships();
+
+    // Instantiate Partial CoreSchema to the desired Schema (Vuerd, Mermaid, etc)
+    schema.create(model.jsonify());
+  }
+
+  public static parseRows() {
+    model.rows.forEach(row => {
+      // Find tables index in tables array
+      let tableIndex = this.getTableIndex(row);
+
+      // If table is not in the tableId map create a new one
+      if (!model.tableId[RowResult.table_name(row)]) {
+        tableIndex = model.tables.length;
+        model.tables.push(utils.newTable(row, model) as CoreTable);
+      }
+
+      // parse the column into the table defined by the row\
+      // If columnIndex is -1 then the column exists and has been altered
+      // else it is a new column
+      let columnIndex = this.getColumnIndex(tableIndex, row);
+      
+      if (columnIndex != -1) {
+        let column_new = utils.newColumn(row, model) as CoreColumn;
+
+        // Add column at the correct position
+        model.tables[tableIndex].columns.splice(columnIndex, 0, column_new);
+      }
+    }); 
+  }
+
+  // Returns the table index if it exists
+  public static getTableIndex(row) {
+    let tableIndex = -1;
+
+    for (let i=0; i<model.tables.length; i++) {
+      if (model.tables[i].name === RowResult.table_name(row)) {
+        tableIndex = i;
+        break;
+      }
+    }
+
+    return tableIndex;
+  }
+
+  // gets columns index in the table if it exists
+  // otherwise return -1 if column exists and was altered
+  public static getColumnIndex(tableIndex, row) {
+    let columnIndex = 0;
+
+    let name = RowResult.column_name(row);
+    let ordinal_position = RowResult.ordinal_position(row);
+
+    model.tables[tableIndex].columns.every(column => {
+      if (name == column.name) {
+        utils.updateColumn(column, row);
+        columnIndex = -1;
+        return false;
+      }
+      if (ordinal_position > column.ordinal_position) {
+        columnIndex++;
+      }
+      return true;
+    });
+
+    return columnIndex;
+  }
+
+  // Finalize relationships after dependencies have been parsed
+  public static finalizeRelationships() {
+    model.toDoRelationships.forEach((row) => {
+      utils.newRelationship(row, model);
+    })
+  }
+
+  
+}
 /**
  * Primary model that contains maps and arrays that define the Schema
  */
