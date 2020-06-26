@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "get-installed-path": "^4.0.8",
     "pg": "^8.2.1",
     "typescript": "^3.9.5"
   },

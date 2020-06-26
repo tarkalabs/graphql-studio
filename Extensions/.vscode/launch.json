@@ -6,6 +6,20 @@
 	"version": "0.2.0",
 	"configurations": [
         {
+            "name": "Run ERD Explorer",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+				"${workspaceRoot}/../",
+				"--extensionDevelopmentPath=${workspaceRoot}/ERD Explorer/erd-explorer" 
+			],
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "outFiles": [ "${workspaceRoot}/ERD Explorer/erd-explorer/out/**/*.js" ],
+            "preLaunchTask": "npm: watch"
+        },
+        {
             "name": "Run ERD Generator",
             "type": "extensionHost",
             "request": "launch",
