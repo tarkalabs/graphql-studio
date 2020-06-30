@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { generateERDCommand } from './generateERD';
+import ViewLoader from './view/ViewLoader';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -12,6 +13,24 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "erd-explorer" is now active!');
 
 	new generateERDCommand(context);
+
+	let disposable = vscode.commands.registerCommand(
+		"erd-explorer.viewERD",
+		() => {
+			let openDialogOptions: vscode.OpenDialogOptions = {
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				filters: {
+				Json: ["json"]
+				}
+			};
+	
+			const view = new ViewLoader(context.extensionPath);
+		}
+	  );
+	
+	  context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated
