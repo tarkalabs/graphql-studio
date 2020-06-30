@@ -1,11 +1,11 @@
 import * as React from "react";
 import Mermaid from "react-mermaid2";
 
-interface IConfigProps {
+interface ERDConfig {
   vscode: any;
 }
 
-export default class ERD extends React.Component<IConfigProps> {
+export default class ERD extends React.Component<ERDConfig> {
   constructor(props: any) {
     super(props);
   }
