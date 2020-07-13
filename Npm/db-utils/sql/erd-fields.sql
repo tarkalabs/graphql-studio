@@ -8,9 +8,9 @@ SELECT 'postgresql' AS dbms,
 		c.data_type,
 		c.character_maximum_length,
 		n.constraint_type,
-		k2.table_schema,
-		k2.table_name,
-		k2.column_name,
+		k2.table_schema as fk_table_schema,
+		k2.table_name as fk_table_name,
+		k2.column_name as fk_column_name,
 		case c.is_nullable
             when 'NO' then 'N-N'
             when 'YES' then 'NULL'

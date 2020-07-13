@@ -33,11 +33,8 @@ export enum CddoreRelationshipTypes {
  * primary responsability is to format the data into the Mermaid format
  */
 export class MermaidSchema extends CoreSchema {
-    create(model: ERD_Model) {
-
-    }
-
     stringify(model: ERD_Model) {
+       //console.log(model);
         let out = "erDiagram\n";
         if (this.relationships) {
             this.relationships.map((relationship)=>{
@@ -46,7 +43,7 @@ export class MermaidSchema extends CoreSchema {
                 switch (relationship.relationshipType) {
                     case CoreRelationshipTypes.N:
                     case CoreRelationshipTypes.ZeroN:
-                        out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroN + " " + endTable.replace("_", "") + "\"\"";
+                        out += "\t" + startTable.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroN + " " + endTable.replace("_", "") + " : \"\"";
                         break;
                     case CoreRelationshipTypes.ZeroOne:
                     case CoreRelationshipTypes.One:

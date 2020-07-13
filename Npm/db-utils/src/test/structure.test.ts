@@ -1,6 +1,7 @@
-import {getStructure} from "../index"
+import {getStructure, MermaidUtils, MermaidSchema} from "../index"
 import {expect} from "chai";
 import { Connection } from "../db/connection";
+import { getERDContent } from "../erd/erd-core-utils";
 describe("structure", () => {
   it("should return current path", async (done) => {
     Connection.setup({
@@ -13,6 +14,7 @@ describe("structure", () => {
     });
     const result = await getStructure();
     console.log(result);
+    console.log(await getERDContent(new MermaidSchema(), new MermaidUtils(),result));
     expect([]).to.eql([]);
     done();
   })

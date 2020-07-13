@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
 
-
 export default class ViewLoader {
     private readonly _panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
@@ -49,8 +48,20 @@ export default class ViewLoader {
                         </script>
                     </head>
                     <body>
-                        <div id="root"></div>
-                        <script crossorigin src="${reactAppUri}"></script>
+                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+                    <script crossorigin src="${reactAppUri}"></script>
+                        <div>
+                        
+                            <div class="dropdown">
+                            <button class="dropbtn">Roots</button>
+                            <ol #roots class="dropdown-content">
+                                <li onclick="clicked('full')">Full ERD</li>
+                            </ol>
+                            </div>
+                            <div class="mermaid" id="mermaid">
+                                
+                            </div>
+                        </div>
                     </body>
                 </html>`;
     }

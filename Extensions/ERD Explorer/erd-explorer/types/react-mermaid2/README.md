@@ -1,1 +1,0 @@
-This local package contains the typings for react-mermaid2

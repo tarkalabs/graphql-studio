@@ -5,11 +5,6 @@ import { ClientConfig, Client } from "pg";
 import { IConnection } from './IConnection';
 import {readFileSync} from "fs";
 
-export interface QueryResults {
-  rowCount: number;
-  rows?: RowResult[];
-};
-
 export interface RowResult {
   dbms: string,
   table_catalog: string,
@@ -21,6 +16,39 @@ export interface RowResult {
   character_maximum_length: number,
   constraint_type: string,
   nullable: string
+}
+
+export interface FieldInfo {
+  columnID: number;
+  dataTypeID: number;
+  dataTypeModifier: number;
+  dataTypeSize: number;
+  format: string;
+  name: string;
+  tableID: number;
+  display_type?: string;
+};
+
+export interface QueryResults {
+  rowCount: number;
+  command: string;
+  rows?: any[];
+  fields?: FieldInfo[];
+  flaggedForDeletion?: boolean;
+  message?: string;
+};
+
+export interface TypeResult {
+  oid: number;
+  typname: string;
+  display_type?: string;
+};
+
+export interface TypeResults {
+  rowCount: number;
+  command: string;
+  rows?: TypeResult[];
+  fields?: FieldInfo[];
 }
 
 export class Connection {
@@ -45,30 +73,29 @@ export class Connection {
     }
 
     public static async runQuery<T>(query: string) {
-      let results = {rowCount:0, rows:[]};
-
+      Connection.connect();
       try {
-        Connection.connect(); 
-        results = await Connection.client.query(query);
+        const res: QueryResults | QueryResults[] = await Connection.client.query({ text: query });
+        const results: QueryResults[] = Array.isArray(res) ? res : [res];
+
+        return results
       } catch (e) {
         console.error(e);
       } finally {
         Connection.disconnect();
-        return results;
       }
     }
-
+    
     public static async getStructure() {
-      let results: QueryResults = {rowCount:0, rows:[]};
+      let results: QueryResults;
 
       try {
         const query = readFileSync(__dirname + "/../../sql/erd-fields.sql").toString();
-        Connection.connect(); 
-        results = (await Connection.client.query(query))[1];
+        results = (await Connection.runQuery(query))[1];
+        console.log(results);
       } catch (e) {
         console.error(e);
       } finally {
-        Connection.disconnect();
         return results;
       }
     }   

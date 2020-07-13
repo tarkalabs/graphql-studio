@@ -3,4 +3,4 @@
 `npm run compile`
 `npm run watch`
 
-Then start the vscode debugger 
+Then start the vscode debugger with F5

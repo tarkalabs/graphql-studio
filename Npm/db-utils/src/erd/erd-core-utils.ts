@@ -37,7 +37,7 @@ declare global {
     interface HTMLStyleElement { styleSheet: any; }
 }
 
-export async function getERDContent(schema : CoreSchema, newUtils: CoreUtils, sqlResults) {   
+export async function getERDContent(schema : CoreSchema, newUtils: CoreUtils, sqlResults) { 
   Generate_ERD_File.getSchema(schema, newUtils, sqlResults);
 
   return schema.stringify(model); 
@@ -52,7 +52,7 @@ export async function getHtmlContent(schema : CoreSchema, newUtils: CoreUtils, s
 export class Generate_ERD_File {
   public static async getSchema(schema : CoreSchema, newUtils: CoreUtils, sqlResults) {
     model = new ERD_Model();
-    model.rows = sqlResults[1].rows;
+    model.rows = sqlResults.rows;
     utils = newUtils;
 
     // parse results into Core Models
@@ -63,15 +63,21 @@ export class Generate_ERD_File {
 
     // Instantiate Partial CoreSchema to the desired Schema (Vuerd, Mermaid, etc)
     schema.create(model.jsonify());
+    //console.log(schema);
   }
 
   public static parseRows() {
+    let s = "";
+    //console.log(model.rows);
     model.rows.forEach(row => {
+      s += RowResult.table_name(row) + "\n";
       // Find tables index in tables array
       let tableIndex = this.getTableIndex(row);
 
       // If table is not in the tableId map create a new one
+      //console.log(model.tableId[RowResult.table_name(row)]);
       if (!model.tableId[RowResult.table_name(row)]) {
+        //console.log("New Table");
         tableIndex = model.tables.length;
         model.tables.push(utils.newTable(row, model) as CoreTable);
       }
@@ -81,6 +87,7 @@ export class Generate_ERD_File {
       // else it is a new column
       let columnIndex = this.getColumnIndex(tableIndex, row);
       
+     // console.log(columnIndex);
       if (columnIndex != -1) {
         let column_new = utils.newColumn(row, model) as CoreColumn;
 
@@ -88,6 +95,7 @@ export class Generate_ERD_File {
         model.tables[tableIndex].columns.splice(columnIndex, 0, column_new);
       }
     }); 
+  //  console.log(s);
   }
 
   // Returns the table index if it exists
@@ -234,6 +242,24 @@ export enum charSizes {
 
 // Data access object that makes raw row data access readable and controlled
 export class RowResult {
+  public static dbms(row: Array<any>) {return row["dbms"]}
+  public static table_catalog(row: Array<any>) {return row["table_catalog"]}
+  public static table_schema(row: Array<any>) {return row["table_schema"]}
+  public static table_name(row: Array<any>) {return row["table_name"]}
+  public static column_name(row: Array<any>) {return row["column_name"]}
+  public static ordinal_position(row: Array<any>) {return row["ordinal_position"]}
+  public static data_type(row: Array<any>) {return row["data_type"]}
+  public static character_maximum_length(row: Array<any>) {return row["character_maximum_length"]}
+  public static constraint(row: Array<any>) {return row["constraint_type"]}
+  public static constraint_pk(row: Array<any>) {return row["constraint_type"] == "PRIMARY KEY"}
+  public static constraint_fk(row: Array<any>) {return row["constraint_type"] == "FOREIGN KEY"}
+  public static constraint_unique(row: Array<any>) {return row["constraint_type"] == "UNIQUE"}
+  public static fk_table_schema(row: Array<any>) {return row["fk_table_schema"]}
+  public static fk_table_name(row: Array<any>) {return row["fk_table_name"]}
+  public static fk_column_name(row: Array<any>) {return row["fk_column_name"]}
+  public static notnull(row: Array<any>) {return row["notnull"]}
+  /*
+  
     public static dbms(row: Array<any>) {return row[0]}
     public static table_catalog(row: Array<any>) {return row[1]}
     public static table_schema(row: Array<any>) {return row[2]}
@@ -249,7 +275,7 @@ export class RowResult {
     public static fk_table_schema(row: Array<any>) {return row[9]}
     public static fk_table_name(row: Array<any>) {return row[10]}
     public static fk_column_name(row: Array<any>) {return row[11]}
-    public static notnull(row: Array<any>) {return row[12]}
+    public static notnull(row: Array<any>) {return row[12]}*/
 }
 
 /** CoreUtils defines the generic creation of the Schema from data rows
