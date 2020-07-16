@@ -1,13 +1,24 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import { Connection } from "db-utils/out/db/connection";
+import { getStructure, getERDContent, MermaidSchema, MermaidUtils } from "db-utils";
 
 export default class ViewLoader {
     private readonly _panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
     private _disposables: vscode.Disposable[] = [];
 
-    constructor(extensionPath: string) {
-        this._extensionPath = extensionPath;
+    constructor(context: vscode.ExtensionContext) {
+        this._extensionPath = context.extensionPath;
+
+        Connection.setup({
+            label:"Localhost",
+            host:"127.0.0.1",
+            user:"dev",
+            password:"1234",
+            port:5432,
+            database:"example"
+        });
 
         this._panel = vscode.window.createWebviewPanel(
             "ERDViewer",
@@ -17,14 +28,35 @@ export default class ViewLoader {
                 enableScripts: true,
 
                 localResourceRoots: [
-                    vscode.Uri.file(path.join(extensionPath, "erdViewer"))
+                    vscode.Uri.file(path.join(this._extensionPath, "erdViewer"))
                 ]
             }
         );
 
         this._panel.webview.html = this.getWebviewContent();
+          
+        // Handle messages from the webview
+        this._panel.webview.onDidReceiveMessage(
+            message => {
+                switch (message.command) {
+                    case 'getERD':
+                        getStructure().then((results) => {
+                            getERDContent(new MermaidSchema(), new MermaidUtils(),results).then((erd) => {
+                                this._panel?.webview.postMessage({
+                                    command: 'loadERD',
+                                    text: erd
+                                  });
+                            });
+                        }
+                    );
+                    return;
+                }
+            },
+            undefined,
+            context.subscriptions
+        );
     }
-
+    
     private getWebviewContent(): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
@@ -48,7 +80,6 @@ export default class ViewLoader {
                         </script>
                     </head>
                     <body>
-                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
                     <script crossorigin src="${reactAppUri}"></script>
                         <div>
                         

@@ -12,9 +12,9 @@
 		"strict": true,
         "jsx": "react",
 		"types": [ "node" ],
-		"typeRoots": [ "../node_modules/@types" ],
+		"typeRoots": [ "../node_modules/@types", "../types" ],
 		"paths": {
-		  "react-mermaid2": ["types/react-mermaid2"]
+			"mermaid": ["types/mermaid"]
 		},
 		"baseUrl":""
 	},

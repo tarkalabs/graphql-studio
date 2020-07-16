@@ -3,7 +3,7 @@
 import * as fs from 'fs';
 import { ClientConfig, Client } from "pg";
 import { IConnection } from './IConnection';
-import {readFileSync} from "fs";
+import { erdFieldsSql } from '../sql/erd-fields';
 
 export interface RowResult {
   dbms: string,
@@ -90,7 +90,7 @@ export class Connection {
       let results: QueryResults;
 
       try {
-        const query = readFileSync(__dirname + "/../../sql/erd-fields.sql").toString();
+        const query = erdFieldsSql;
         results = (await Connection.runQuery(query))[1];
         console.log(results);
       } catch (e) {

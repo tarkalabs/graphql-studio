@@ -1,11 +1,9 @@
 import * as $ from 'jquery';
-import 'bootstrap';
 import 'popper.js';
 
 import mermaid from "mermaid";
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-//import { getStructure, MermaidSchema, MermaidUtils, getERDContent } from "db-utils";
+import 'bootstrap';
+import './index.scss';
 
 declare global {
   interface Window {
@@ -13,11 +11,14 @@ declare global {
   }
 }
 
-//const vscode = window.acquireVsCodeApi();
+const vscode = window.acquireVsCodeApi();
 
 $(document).ready(function () {
   clicked("full");
   mermaid.contentLoaded();
+  vscode.postMessage({
+    command: 'getERD'
+  })
 });
 
 mermaid.initialize({
@@ -72,10 +73,7 @@ var parse = function(str) {
 }
 
 let erd = parse("");
-var erdRaw = "";//getERDContent(new MermaidSchema(), new MermaidUtils(), getStructure()).then(results => {
-  //this.erd = parse(results);
-  //return results;
-//});
+var erdRaw = "";
 
 var currentERD = "";
 var getMermaid = function(name) {
@@ -106,12 +104,11 @@ var reload = function(content) {
   $("g").click(function(e) {
     console.log(e.currentTarget.id);
     expand(e.currentTarget.id);
-    console.log(currentERD);
-    console.log(erd);
     reload(currentERD);
   });
 }
-var clicked = function(id) {
+
+const clicked = function(id) {
   if (id == "full") {
     currentERD = "erDiagram " + erdRaw;
     reload(currentERD);
@@ -119,3 +116,16 @@ var clicked = function(id) {
     reload(getMermaid(id));
   }
 }
+
+// Handle the message inside the webview
+window.addEventListener('message', event => {
+
+  const message = event.data; // The JSON data our extension sent
+
+  switch (message.command) {
+      case 'loadERD':
+        parse(message.text);
+        reload(message.text);
+        break;
+  }
+});
