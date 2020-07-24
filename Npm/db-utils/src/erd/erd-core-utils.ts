@@ -63,6 +63,7 @@ export class Generate_ERD_File {
 
     // Instantiate Partial CoreSchema to the desired Schema (Vuerd, Mermaid, etc)
     schema.create(model.jsonify());
+    schema.model = Object.assign({}, model);
     //console.log(schema);
   }
 
@@ -258,24 +259,6 @@ export class RowResult {
   public static fk_table_name(row: Array<any>) {return row["fk_table_name"]}
   public static fk_column_name(row: Array<any>) {return row["fk_column_name"]}
   public static notnull(row: Array<any>) {return row["notnull"]}
-  /*
-  
-    public static dbms(row: Array<any>) {return row[0]}
-    public static table_catalog(row: Array<any>) {return row[1]}
-    public static table_schema(row: Array<any>) {return row[2]}
-    public static table_name(row: Array<any>) {return row[3]}
-    public static column_name(row: Array<any>) {return row[4]}
-    public static ordinal_position(row: Array<any>) {return row[5]}
-    public static data_type(row: Array<any>) {return row[6]}
-    public static character_maximum_length(row: Array<any>) {return row[7]}
-    public static constraint(row: Array<any>) {return row[8]}
-    public static constraint_pk(row: Array<any>) {return row[8] == "PRIMARY KEY"}
-    public static constraint_fk(row: Array<any>) {return row[8] == "FOREIGN KEY"}
-    public static constraint_unique(row: Array<any>) {return row[8] == "UNIQUE"}
-    public static fk_table_schema(row: Array<any>) {return row[9]}
-    public static fk_table_name(row: Array<any>) {return row[10]}
-    public static fk_column_name(row: Array<any>) {return row[11]}
-    public static notnull(row: Array<any>) {return row[12]}*/
 }
 
 /** CoreUtils defines the generic creation of the Schema from data rows
@@ -359,6 +342,10 @@ export class CoreUtils {
         // If relationship already exists modify it accordingly
         if (model.relationshipMap[endId] && model.relationshipMap[endId] == startId) {
             let relationship = model.relationships[model.relationshipIndex[endId]] as CoreRelationship;
+            if (!relationship) {
+              console.log("Error: Relationship " + endId + " is undefined...");
+              return null;
+            }
             relationship.endId = relationship.startId;
             relationship.endColumnIds = relationship.startColumnIds;
             relationship.startId = endId;

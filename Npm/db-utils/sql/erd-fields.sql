@@ -34,4 +34,4 @@ SELECT 'postgresql' AS dbms,
 		WHERE 
 			t.TABLE_TYPE='BASE TABLE' AND 
 			t.table_schema 
-		NOT IN('information_schema','pg_catalog','sqitch');
+		NOT IN('information_schema','pg_catalog');

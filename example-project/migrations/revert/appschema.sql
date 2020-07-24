@@ -1,7 +1,11 @@
--- Revert example:appschema from pg
+-- Revert stackdump:appschema from pg
 
 BEGIN;
 
-DROP SCHEMA dvdrental
+DROP EXTENSION IF EXISTS "pgcrypto";
+DROP EXTENSION IF EXISTS "uuid-ossp";
+DROP SCHEMA IF EXISTS stackdump CASCADE;
+DROP SCHEMA IF EXISTS stackdump_private CASCADE;
+DROP SCHEMA IF EXISTS extensions CASCADE;
 
 COMMIT;

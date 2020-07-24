@@ -9,6 +9,7 @@
 		],
 		"sourceMap": true,
 		"rootDir": "src",
+		"strictNullChecks": false,
 		"strict": true,
         "jsx": "react",
 		"types": [ "node" ],

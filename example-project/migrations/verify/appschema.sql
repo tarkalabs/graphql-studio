@@ -1,7 +1,9 @@
--- Verify example:appschema on pg
+-- Verify stackdump:appschema on pg
 
 BEGIN;
 
--- XXX Add verifications here.
+SELECT pg_catalog.has_schema_privilege('stackdump', 'usage');
+SELECT pg_catalog.has_schema_privilege('stackdump_private', 'usage');
+SELECT pg_catalog.has_schema_privilege('extensions', 'usage');
 
 ROLLBACK;

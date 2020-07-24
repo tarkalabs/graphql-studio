@@ -32,6 +32,7 @@ var flip = {
 }
 
 var parse = function(str) {
+  str = str.substr(str.indexOf("\n")+1);
   var erd = {
 
   }

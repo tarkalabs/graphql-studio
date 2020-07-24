@@ -2,23 +2,15 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { Connection } from "db-utils/out/db/connection";
 import { getStructure, getERDContent, MermaidSchema, MermaidUtils } from "db-utils";
+import { INode } from "src/interfaces/INode";
 
 export default class ViewLoader {
     private readonly _panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
     private _disposables: vscode.Disposable[] = [];
 
-    constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext, private treeNode: INode) {
         this._extensionPath = context.extensionPath;
-
-        Connection.setup({
-            label:"Localhost",
-            host:"127.0.0.1",
-            user:"dev",
-            password:"1234",
-            port:5432,
-            database:"example"
-        });
 
         this._panel = vscode.window.createWebviewPanel(
             "ERDViewer",
@@ -33,6 +25,11 @@ export default class ViewLoader {
             }
         );
 
+        console.log(new MermaidSchema(treeNode.getSchema()).stringify(treeNode.getSchema().model));
+        console.log(treeNode.getSchema());
+        console.log(treeNode.getSchema().tree);
+        console.log(treeNode.getSchema().model);
+
         this._panel.webview.html = this.getWebviewContent();
           
         // Handle messages from the webview
@@ -40,7 +37,13 @@ export default class ViewLoader {
             message => {
                 switch (message.command) {
                     case 'getERD':
-                        getStructure().then((results) => {
+                        let mermaidSchema = new MermaidSchema();
+                        mermaidSchema.create(treeNode.getSchema());
+                        this._panel?.webview.postMessage({
+                            command: 'loadERD',
+                            text: mermaidSchema.stringify(treeNode.getSchema().model)
+                        });
+                        /*getStructure().then((results) => {
                             getERDContent(new MermaidSchema(), new MermaidUtils(),results).then((erd) => {
                                 this._panel?.webview.postMessage({
                                     command: 'loadERD',
@@ -48,7 +51,7 @@ export default class ViewLoader {
                                   });
                             });
                         }
-                    );
+                    );*/
                     return;
                 }
             },
@@ -82,7 +85,7 @@ export default class ViewLoader {
                     <body>
                     <script crossorigin src="${reactAppUri}"></script>
                         <div>
-                        
+                            <div>${this.treeNode.name}</div>
                             <div class="dropdown">
                             <button class="dropbtn">Roots</button>
                             <ol #roots class="dropdown-content">

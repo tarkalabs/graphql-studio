@@ -92,7 +92,6 @@ export class Connection {
       try {
         const query = erdFieldsSql;
         results = (await Connection.runQuery(query))[1];
-        console.log(results);
       } catch (e) {
         console.error(e);
       } finally {

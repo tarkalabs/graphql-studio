@@ -2,6 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import ViewLoader from './view/ViewLoader';
+import { PostgreSQLTreeDataProvider } from './tree/treeProvider';
+import { Global } from './common/global';
+import { INode } from './interfaces/INode';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -11,24 +14,31 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "erd-explorer" is now active!');
 
+	let treeProvider: PostgreSQLTreeDataProvider = PostgreSQLTreeDataProvider.getInstance(context);
+
 	let disposable = vscode.commands.registerCommand(
 		"erd-explorer.viewERD",
-		() => {
+		(treeNode?: INode) => {
 			let openDialogOptions: vscode.OpenDialogOptions = {
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: false,
 				filters: {
-				Json: ["json"]
+					Json: ["json"]
 				}
 			};
-	
-			const view = new ViewLoader(context);
+
+			const view = new ViewLoader(context, treeNode);
 		}
-	  );
-	
-	  context.subscriptions.push(disposable);
+	);
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('vscode-postgres.refresh', async (treeNode: INode) => {
+		const tree = PostgreSQLTreeDataProvider.getInstance();
+		tree.refresh(treeNode);
+	});
+	context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

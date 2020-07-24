@@ -1,12 +1,74 @@
 {
   "activationEvents": [
-    "onCommand:erd-explorer.generateERD",
-    "onCommand:erd-explorer.viewERD"
+    "*"
   ],
   "categories": [
     "Other"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "PostgreSQL",
+      "properties": {
+        "vscode-postgres.defaultConnection": {
+          "type": "string",
+          "default": "",
+          "description": "The default connection to use"
+        },
+        "vscode-postgres.defaultDatabase": {
+          "type": "string",
+          "default": "",
+          "description": "The default database on the default connection to use"
+        },
+        "vscode-postgres.showExplorer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show or hide the database explorer."
+        },
+        "vscode-postgres.prettyPrintJSONfields": {
+          "type": "boolean",
+          "default": false,
+          "description": "Turns on/off pretty printing of JSON fields"
+        },
+        "vscode-postgres.setConnectionFromExplorer": {
+          "type": "string",
+          "enum": [
+            "always",
+            "ifunset",
+            "never"
+          ],
+          "default": "always",
+          "description": "Controls whether selecting a database in explorer changes the current editor's connection"
+        },
+        "vscode-postgres.tableColumnSortOrder": {
+          "type": "string",
+          "enum": [
+            "db-order",
+            "alpha",
+            "reverse-alpha"
+          ],
+          "default": "db-order",
+          "description": "Controls the order of the columns in the database explorer. Default is db-order which orders the columns as the were added to the table (how postgres reports them)"
+        },
+        "vscode-postgres.intervalFormat": {
+          "type": "string",
+          "enum": [
+            "iso_8601",
+            "humanize",
+            "succinct"
+          ],
+          "default": "iso_8601",
+          "description": "Controls the display format for `interval` columns. Default is the iso_8601 standard which does not cover milliseconds."
+        },
+        "vscode-postgres.virtualFolders": {
+          "type": "array",
+          "default": [
+            "functions"
+          ],
+          "description": "Controls virtual folders that are shown under schema. Currently only functions are supported."
+        }
+      }
+    },
     "commands": [
       {
         "command": "erd-explorer.generateERD",
@@ -15,13 +77,95 @@
       {
         "command": "erd-explorer.viewERD",
         "title": "View ERD"
+      },
+      {
+        "command": "vscode-postgres.refresh",
+        "title": "Refresh Items",
+        "category": "PostgreSQL"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [],
+      "view/title": [],
+      "commandPalette": [],
+      "editor/context": [],
+      "view/item/context": [
+        {
+          "command": "erd-explorer.viewERD",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.connection",
+          "group": "postgres@1"
+        },
+        {
+          "command": "erd-explorer.viewERD",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.schema",
+          "group": "postgres@1"
+        },
+        {
+          "command": "erd-explorer.viewERD",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.database",
+          "group": "postgres@1"
+        },
+        {
+          "command": "erd-explorer.viewERD",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.table",
+          "group": "postgres@1"
+        },
+        {
+          "command": "erd-explorer.viewERD",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.function-folder",
+          "group": "postgres@1"
+        },
+        {
+          "command": "vscode-postgres.refresh",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.connection",
+          "group": "postgres@1"
+        },
+        {
+          "command": "vscode-postgres.refresh",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.schema",
+          "group": "postgres@1"
+        },
+        {
+          "command": "vscode-postgres.refresh",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.database",
+          "group": "postgres@1"
+        },
+        {
+          "command": "vscode-postgres.refresh",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.table",
+          "group": "postgres@1"
+        },
+        {
+          "command": "vscode-postgres.refresh",
+          "when": "view == postgres && viewItem == vscode-postgres.tree.function-folder",
+          "group": "postgres@1"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "postgres-explorer",
+          "title": "PostgreSQL Explorer",
+          "icon": "resources/postgres-explorer.svg"
+        }
+      ]
+    },
+    "views": {
+      "postgres-explorer": [
+        {
+          "id": "postgres",
+          "name": "PostgreSQL",
+          "when": "config.vscode-postgres.showExplorer == true"
+        }
+      ]
+    }
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
     "db-utils": "file:../../../Npm/db-utils",
     "jquery": "^3.5.1",
+    "keytar": "^6.0.1",
     "mermaid": "^8.5.2",
     "popper.js": "^1.16.1"
   },
@@ -33,8 +177,6 @@
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.14",
     "@types/popper.js": "^1.11.0",
-    "@types/react": "^16.9.41",
-    "@types/react-dom": "^16.9.8",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
     "@typescript-eslint/parser": "^3.5.0",
     "autoprefixer": "^9.8.5",
@@ -70,7 +212,8 @@
     "vscode:prepublish": "npm run compile",
     "watch": "npm-run-all -p watch:*",
     "watch:extension": "tsc -watch -p ./",
-    "watch:views": "webpack --watch --mode development"
+    "watch:views": "webpack --watch --mode development",
+    "update:dbutils": "npm run compile --prefix \"../../../Npm/db-utils\" && npm install"
   },
   "version": "0.0.1"
 }
