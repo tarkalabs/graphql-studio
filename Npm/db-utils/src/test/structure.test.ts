@@ -1,7 +1,7 @@
-import {getStructure, MermaidUtils, MermaidSchema, getTreeSchema} from "../index"
 import {expect} from "chai";
 import { Connection } from "../db/connection";
-import { getERDContent } from "../erd/erd-core-utils";
+import { getStructure } from "..";
+
 describe("structure", () => {
   it("should return current path", async (done) => {
     Connection.setup({
@@ -12,9 +12,25 @@ describe("structure", () => {
       port:5432,
       database:"StackExchange"
     });
-    const result = await getTreeSchema();
-    console.log(result.tree.schemas[0].tables);
-    //console.log(await getERDContent(new MermaidSchema(), new MermaidUtils(),result));
+
+    let str = "";
+
+    const result = await getStructure();
+    
+    /*/ Uncomment to view tree structure
+    result.tree.schemas.forEach(schema => {
+      str += schema.schemaName + "\n";
+      schema.tables.forEach(table => {
+        str += "\t- " + table.tableName + "\n";
+        table.columns.forEach(column => {
+          str += "\t\t- " + column.columnName + " : " + column.data_type + ((column.pk)? " pk": "") + ((column.fk)? " fk": "") + "\n";
+        });
+      });
+    });
+    
+    console.log(str);
+    //*/
+
     expect([]).to.eql([]);
     done();
   })
