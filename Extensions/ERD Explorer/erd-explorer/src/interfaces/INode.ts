@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { CoreSchema } from 'db-utils/out/erd/erd-core-models';
+import { ErdModel } from 'db-utils/out/structure/utils';
 
 export interface INode {
   isTable: boolean;
@@ -7,5 +7,5 @@ export interface INode {
 
   getTreeItem(): Promise<vscode.TreeItem> | vscode.TreeItem;
   getChildren(): Promise<INode[]> | INode[];
-  getSchema(): CoreSchema;
+  getSchema(): ErdModel;
 }

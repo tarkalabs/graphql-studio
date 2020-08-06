@@ -21,12 +21,14 @@ export interface Schema {
 };
 export interface Table {
     name;
+    schema;
     ordinal_position;
     columns: Array<string>;
     id;
 };
 export interface Column {
     name;
+    table;
     data_type;
     ordinal_position;
     options: {

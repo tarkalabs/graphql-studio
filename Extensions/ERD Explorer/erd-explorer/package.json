@@ -164,6 +164,8 @@
   "dependencies": {
     "bootstrap": "^4.5.0",
     "db-utils": "file:../../../Npm/db-utils",
+    "dotenv": "^8.2.0",
+    "dotenvrc": "^1.0.1",
     "jquery": "^3.5.1",
     "keytar": "^6.0.1",
     "mermaid": "^8.5.2",
@@ -172,6 +174,7 @@
   "description": "",
   "devDependencies": {
     "@types/bootstrap": "^4.5.0",
+    "@types/dotenv": "^8.2.0",
     "@types/glob": "^7.1.1",
     "@types/jquery": "^3.5.0",
     "@types/mocha": "^7.0.2",

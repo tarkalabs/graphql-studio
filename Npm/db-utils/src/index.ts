@@ -3,7 +3,7 @@ import { PgTree } from "./structure/interfaces";
 
 
 export const getStructure = async () => {
-  let model = new GenerateERD().getSchema();
+  let model = await new GenerateERD().getSchema();
 
   return model;
 }

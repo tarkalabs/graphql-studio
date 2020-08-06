@@ -4,8 +4,6 @@ import { IConnection } from 'db-utils/out/db/IConnection';
 import { INode } from 'src/interfaces/INode';
 import { TableNode } from './tableNode';
 import { InfoNode } from './infoNode';
-//import { Global } from 'src/common/global';
-import { CoreSchema } from 'db-utils/out/erd/erd-core-models';
 import { DatabaseNode } from './databaseNode';
 
 export class SchemaNode implements INode {

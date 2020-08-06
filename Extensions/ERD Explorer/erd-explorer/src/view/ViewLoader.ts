@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { Connection } from "db-utils/out/db/connection";
-import { getStructure, getERDContent, MermaidSchema, MermaidUtils } from "db-utils";
+import { MermaidModel } from "db-utils/out/erd/mermaid-utils";
+import { getStructure} from "db-utils";
 import { INode } from "src/interfaces/INode";
 
 export default class ViewLoader {
@@ -25,11 +25,6 @@ export default class ViewLoader {
             }
         );
 
-        console.log(new MermaidSchema(treeNode.getSchema()).stringify(treeNode.getSchema().model));
-        console.log(treeNode.getSchema());
-        console.log(treeNode.getSchema().tree);
-        console.log(treeNode.getSchema().model);
-
         this._panel.webview.html = this.getWebviewContent();
           
         // Handle messages from the webview
@@ -37,21 +32,11 @@ export default class ViewLoader {
             message => {
                 switch (message.command) {
                     case 'getERD':
-                        let mermaidSchema = new MermaidSchema();
-                        mermaidSchema.create(treeNode.getSchema());
+                        console.log(MermaidModel.getERD(treeNode.getSchema()));
                         this._panel?.webview.postMessage({
                             command: 'loadERD',
-                            text: mermaidSchema.stringify(treeNode.getSchema().model)
+                            text: MermaidModel.getERD(treeNode.getSchema())
                         });
-                        /*getStructure().then((results) => {
-                            getERDContent(new MermaidSchema(), new MermaidUtils(),results).then((erd) => {
-                                this._panel?.webview.postMessage({
-                                    command: 'loadERD',
-                                    text: erd
-                                  });
-                            });
-                        }
-                    );*/
                     return;
                 }
             },

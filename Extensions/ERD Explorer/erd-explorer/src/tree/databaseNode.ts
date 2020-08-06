@@ -4,14 +4,14 @@ import { IConnection } from 'db-utils/out/db/IConnection';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { SchemaNode } from './schemaNode';
 import { InfoNode } from './infoNode';
-import { Connection, QueryResults } from 'db-utils/out/db/connection';
-import { getStructure, getTreeSchema } from 'db-utils';
-import { CoreSchema } from 'db-utils/out/erd/erd-core-models';
+import { getStructure } from 'db-utils';
+import { ErdModel } from 'db-utils/out/structure/utils';
+import { Connection } from 'db-utils/out/db/connection';
 
 export class DatabaseNode implements INode {
   public isTable = true;
   public name = "";
-  private schema: CoreSchema;
+  private schema: ErdModel;
 
   constructor(private readonly connection: IConnection, private readonly dbName: string) {
     Connection.setup({
@@ -47,7 +47,7 @@ export class DatabaseNode implements INode {
 
   public async getChildren(): Promise<INode[]> {
     try {
-      this.schema = await getTreeSchema();
+      this.schema = await getStructure();
 
       return this.schema.tree.schemas.map(schema => {
         return new SchemaNode(this.connection, this, schema);

@@ -1,6 +1,10 @@
 {
 	"folders": [
 		{
+			"name": "Workspace",
+			"path": "./"
+		},
+		{
 			"name": "Project Source",
 			"path": "example-project"
 		},

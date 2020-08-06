@@ -3,7 +3,6 @@ import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { INode } from 'src/interfaces/INode';
 import { IConnection } from 'db-utils/out/db/IConnection';
 import { IColumn } from 'src/interfaces/IColumn';
-import { SchemaResults } from 'db-utils/out/erd/erd-core-utils';
 import { SchemaNode } from './schemaNode';
 import { TableNode } from './tableNode';
 

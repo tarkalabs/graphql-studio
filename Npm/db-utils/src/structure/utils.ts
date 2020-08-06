@@ -145,6 +145,7 @@ export class ErdModel {
       if (!table) {
           table = {
             name: tableName,
+            schema: schema.id,
             columns: [],
             ordinal_position: "" + this.ordinal_position++,
             id: tableName + ":" + this.uniqueTableId++
@@ -165,6 +166,7 @@ export class ErdModel {
     if (!column) {
       column = {
         name: columnName,
+        table: table.id,
         data_type: RowResult.data_type(row),
         ordinal_position: RowResult.ordinal_position(row),
         options: {
