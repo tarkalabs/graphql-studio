@@ -7,10 +7,12 @@ import { SchemaNode } from './schemaNode';
 import { TableNode } from './tableNode';
 
 export class ColumnNode implements INode {
-  public isTable = true;
+  public isTable = false;
   public name = "";
+  public parent: INode = null;
 
   constructor(private readonly connection: IConnection, private readonly schemaNode: SchemaNode, private readonly tableNode: TableNode, private readonly column: IColumn) {
+    this.parent = tableNode;
   }
 
   public getSchema() {

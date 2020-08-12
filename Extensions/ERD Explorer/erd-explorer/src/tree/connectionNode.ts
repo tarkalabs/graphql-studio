@@ -6,8 +6,9 @@ import { DatabaseNode } from './databaseNode';
 import { InfoNode } from './infoNode';
 
 export class ConnectionNode implements INode {
-  public isTable = true;
+  public isTable = false;
   public name = "";
+  public parent: INode = null;
 
   constructor(public readonly id: string, private readonly connection: IConnection) {}
 
@@ -34,7 +35,7 @@ export class ConnectionNode implements INode {
 
   public async getChildren(): Promise<INode[]> {
     if (this.connection.database) {
-      return [new DatabaseNode(this.connection, this.connection.database)];
+      return [new DatabaseNode(this.connection, this.connection.database, this)];
     }
 
     // GET ALL DATABASES
@@ -51,10 +52,10 @@ export class ConnectionNode implements INode {
       /*/
       
     //  return res.rows.map<DatabaseNode>(database => {
-        return [new DatabaseNode(this.connection, this.connection.database)];
+        return [new DatabaseNode(this.connection, this.connection.database, this)];
       //});
     } catch(err) {
-      return [new InfoNode(err)];
+      return [new InfoNode(err, this)];
     } finally {
     }
   }

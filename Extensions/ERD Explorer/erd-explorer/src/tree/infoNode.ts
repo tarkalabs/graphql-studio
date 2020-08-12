@@ -4,10 +4,13 @@ import { TreeItemCollapsibleState } from 'vscode';
 import { INode } from 'src/interfaces/INode';
 
 export class InfoNode implements INode {
-  public isTable = true;
+  public isTable = false;
   public name = "";
+  public parent: INode = null;
 
-  constructor(private readonly label: string) {}
+  constructor(private readonly label: string, private readonly _parent: INode) {
+    this.parent = _parent;
+  }
 
   public getSchema(): any {
     return null;

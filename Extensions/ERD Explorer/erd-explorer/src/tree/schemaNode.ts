@@ -7,10 +7,14 @@ import { InfoNode } from './infoNode';
 import { DatabaseNode } from './databaseNode';
 
 export class SchemaNode implements INode {
-  public isTable = true;
+  public isTable = false;
   public name = "";
+  public parent: INode = null;
 
-  constructor(private readonly connection: IConnection, private readonly databaseNode: DatabaseNode, private readonly treeSchema: any) {}
+  constructor(private readonly connection: IConnection, private readonly databaseNode: DatabaseNode, private readonly treeSchema: any) {
+    this.parent = databaseNode;
+    this.name = this.treeSchema.schemaName;
+  }
   
   public getSchema() {
     return this.databaseNode.getSchema();
@@ -50,7 +54,7 @@ export class SchemaNode implements INode {
         return new TableNode(this.connection, this, table);
       });
     } catch(err) {
-      return [new InfoNode(err)];
+      return [new InfoNode(err, this)];
     } finally {
     }
   }

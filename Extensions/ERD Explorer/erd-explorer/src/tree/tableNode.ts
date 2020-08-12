@@ -10,12 +10,14 @@ import { SchemaNode } from "./schemaNode";
 export class TableNode implements INode {
   public isTable = true;
   public name = "";
+  public parent: INode = null;
 
   constructor(public readonly connection: IConnection
             , public readonly schemaNode: SchemaNode
             , public readonly table: any)
   {
     this.name = this.table.tableName;
+    this.parent = schemaNode;
   }
 
   public getSchema() {
@@ -40,7 +42,7 @@ export class TableNode implements INode {
         return new ColumnNode(this.connection, this.schemaNode, this, column);
       });
     } catch(err) {
-      return [new InfoNode(err)];
+      return [new InfoNode(err, this)];
     } finally {
     }
   }

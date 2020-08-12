@@ -7,13 +7,15 @@ import { InfoNode } from './infoNode';
 import { getStructure } from 'db-utils';
 import { ErdModel } from 'db-utils/out/structure/utils';
 import { Connection } from 'db-utils/out/db/connection';
+import { ConnectionNode } from './connectionNode';
 
 export class DatabaseNode implements INode {
-  public isTable = true;
+  public isTable = false;
   public name = "";
   private schema: ErdModel;
+  public parent: INode = null;
 
-  constructor(private readonly connection: IConnection, private readonly dbName: string) {
+  constructor(private readonly connection: IConnection, private readonly dbName: string, private readonly connectionNode: ConnectionNode) {
     Connection.setup({
       label: connection.label,
       host: connection.host,
@@ -21,6 +23,10 @@ export class DatabaseNode implements INode {
       password: connection.password,
       port: connection.port,
       database: dbName
+    });
+    this.parent = connectionNode;
+    getStructure().then(schema => {
+      this.schema = schema;
     });
   }
 
@@ -47,13 +53,11 @@ export class DatabaseNode implements INode {
 
   public async getChildren(): Promise<INode[]> {
     try {
-      this.schema = await getStructure();
-
       return this.schema.tree.schemas.map(schema => {
         return new SchemaNode(this.connection, this, schema);
       });
     } catch(err) {
-      return [new InfoNode(err)];
+      return [new InfoNode(err, this)];
     }
   }
 }
