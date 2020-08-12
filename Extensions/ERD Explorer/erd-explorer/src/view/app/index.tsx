@@ -6,7 +6,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
 import { MermaidModel } from "db-utils/out/erd/mermaid-utils";
 import { ErdModel } from "db-utils/out/structure/utils";
-import { log } from './messaging';
 
 declare global {
   interface Window {
@@ -15,6 +14,7 @@ declare global {
 }
 
 let model: ErdModel = undefined;
+const vscode = window.acquireVsCodeApi();
 
 $(document).ready(function () {
   mermaid.contentLoaded();
@@ -28,8 +28,41 @@ mermaid.initialize({
 });
 
 
+// Handle the message inside the webview
+window.addEventListener('message', event => {
+    const message = event.data; // The JSON data our extension sent
 
-/*
+    switch (message.command) {
+        case 'loadERD':
+            currentERD = message.text;
+            erdRaw = message.text;
+            erd = parse(message.text);
+            log(message.table)
+            clicked({target: {id: message.table}});
+            break;
+    }
+});
+
+window.onerror = function(message, source, lineno, colno, error) {
+    vscode.postMessage({
+        command: 'error',
+        error: {
+        message, 
+        source, 
+        lineno, 
+        colno, 
+        error
+        }
+    });
+} 
+
+export function log(message) {
+    vscode.postMessage({
+        command: 'log',
+        message: message
+    })
+}
+
 var flip = function(str) {
   let out = "";
   let strArr = str.split("").reverse();
@@ -102,7 +135,7 @@ var getMermaid = function(id) {
   }
   var out = "erDiagram\n";
   erd[id].forEach((e) => {
-    out += name + " " + e.relationship + " " + e.name + " : \"\"\n";
+    out += id + " " + e.relationship + " " + e.name + " : \"\"\n";
   });
   currentERD = out;
   return out;
@@ -132,6 +165,6 @@ var reload = function(content) {
 
 function clicked(element) {
   let id = element.target.id;
+  console.log(getMermaid(id));
   reload(getMermaid(id));
 }
-*/

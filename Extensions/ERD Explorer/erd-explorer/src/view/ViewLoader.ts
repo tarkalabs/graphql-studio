@@ -59,14 +59,6 @@ export default class ViewLoader {
         );
         const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
 
-        const bootstrapStylesPath = vscode.Uri.file(
-            //path.join(this._extensionPath, "node_modules", "bootstrao", "dist", "css", "bootstrap.min.css")
-            path.join(this._extensionPath, "erdViewer", "test.css")
-        );
-        const bootstrapStylesUri = bootstrapStylesPath.with({ scheme: "vscode-resource" });
-
-        console.log(bootstrapStylesUri);
-
         return `<!DOCTYPE html>
                 <html lang="en">
                     <head>

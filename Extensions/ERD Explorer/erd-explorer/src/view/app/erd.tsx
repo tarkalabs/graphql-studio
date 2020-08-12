@@ -1,4 +1,4 @@
-import { ErdModel } from "db-utils/out/structure/utils";
+/*import { ErdModel } from "db-utils/out/structure/utils";
 
 let model: ErdModel;
 export let erd: string = "";
@@ -16,7 +16,7 @@ function parseModel() {
     
     for (let key in model.dbStructure.relationships.items) {
         let relationship = model.dbStructure.relationships.items[key];
-        options.push();
+        //options.push();
     }
 }
 
@@ -37,7 +37,7 @@ function collapse() {
 }
 
 function getMermaid(id: string): string {
-
+    return "";
 }
 
 const relationships = {
@@ -53,4 +53,4 @@ const relationships = {
     "||--o|": "|o--||",
     "}|--o{": "}o--|{",
     "}|--o|": "|o--|{",
-}
+}*/
