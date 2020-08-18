@@ -234,14 +234,14 @@ export class ErdModel {
     }
   }
 
-  getRelationshipId(startSchemaName, startTableName, endSchemaName, endTableName) {
+  public getRelationshipId(startSchemaName, startTableName, endSchemaName, endTableName) {
     if (startSchemaName + "." + startTableName < endSchemaName + "." + endTableName) {
       return startSchemaName + "." + startTableName + "=>" + endSchemaName + "." + endTableName;
     }
     return endSchemaName + "." + endTableName + "=>" + startSchemaName + "." + startTableName;
   }
 
-  getOptions(row: Row) {
+  public getOptions(row: Row) {
     let options = {
       autoIncrement: false,
       primaryKey: RowResult.constraint_pk(row),
@@ -253,41 +253,41 @@ export class ErdModel {
     return options;
   }
 
-  getSchemaByName(name) {
+  public getSchemaByName(name) {
     if (!this.dbStructure.schemas.ids[""]) {
       return undefined;
     }
     let id = this.dbStructure.schemas.ids[""][name];
     return this.dbStructure.schemas.items[id];
   }
-  getSchemaById(id) {
+  public getSchemaById(id) {
     return this.dbStructure.schemas.items[id];
   }
-  getSchemaId(name) {
+  public getSchemaId(name) {
     if (!this.dbStructure.schemas.ids[""]) {
       return undefined;
     }
     return this.dbStructure.schemas.ids[""][name];
   }
 
-  getItemByName(map: Map<any>, name, schemaName) {
+  public getItemByName(map: Map<any>, name, schemaName) {
     let id = this.getItemId(map, name, schemaName);
     if (!id) {
       return undefined;
     }
     return this.getItemById(map, id);
   }
-  getItemById(map: Map<any>, id) {
+  public getItemById(map: Map<any>, id) {
     return map.items[id];
   }
-  getItemId(map: Map<any>, name, schemaName) {
+  public getItemId(map: Map<any>, name, schemaName) {
     if (!map.ids[schemaName]) {
       return undefined;
     }
     return map.ids[schemaName][name];
   }
 
-  addItem(item: any, map: Map<any>, id, name, schemaName) {
+  public addItem(item: any, map: Map<any>, id, name, schemaName) {
     map.items[id] = item;
     if (!map.ids[schemaName]) {
         map.ids[schemaName] = {};

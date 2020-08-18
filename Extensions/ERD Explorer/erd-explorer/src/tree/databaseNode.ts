@@ -25,8 +25,9 @@ export class DatabaseNode implements INode {
       database: dbName
     });
     this.parent = connectionNode;
-    getStructure().then(schema => {
-      this.schema = schema;
+    getStructure().then(new_schema => {
+      this.schema = new_schema
+      console.log(this.schema.getItemById);
     });
   }
 

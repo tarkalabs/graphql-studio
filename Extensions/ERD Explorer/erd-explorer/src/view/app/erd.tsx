@@ -1,4 +1,5 @@
 /*import { ErdModel } from "db-utils/out/structure/utils";
+import { MermaidModel } from "db-utils/out/erd/mermaid-utils";
 
 let model: ErdModel;
 export let erd: string = "";
@@ -13,19 +14,30 @@ export function updateModel(new_model: ErdModel, target_id: string) {
 }
 
 function parseModel() {
-    
     for (let key in model.dbStructure.relationships.items) {
         let relationship = model.dbStructure.relationships.items[key];
-        //options.push();
+        options[model.getItemById(model.dbStructure.tables, relationship.startTable.id).name].push(relationship.id);
+        options[model.getItemById(model.dbStructure.tables, relationship.endTable.id).name].push(relationship.id);
     }
 }
 
-function load(id: string) {
-    erd = getMermaid(id);
+function load(name: string) {
+    let out = "erDiagram\n";
+    if (name == "full") {
+        return MermaidModel.getERD(model);
+    } else {
+        options[name].forEach(relationshipId => {
+            let relationship = model.dbStructure.relationships.items[relationshipId];
+            out += model.getItemById(model.dbStructure.tables, relationship.startTable.id).name + " " + relationships[relationship.relationshipType] + " " + model.getItemById(model.dbStructure.tables, relationship.endTable.id).name + " : \"\"";
+        });
+    }
+    return out;
 }
 
-export function click() {
-
+export function click(element) {
+    let id = element.target.id;
+    console.log(id);
+    load(id);
 }
 
 function expand() {
@@ -36,21 +48,12 @@ function collapse() {
 
 }
 
-function getMermaid(id: string): string {
-    return "";
-}
-
 const relationships = {
-    "||--|{": "}|--||",
-    "||--||": "||--||",
-    "}|--|{": "}|--|{",
-    "}|--||": "||--|{",
-    "|o--|{": "}|--o|",
-    "|o--||": "||--o|",
-    "}o--|{": "}|--o{",
-    "}o--||": "||--o{",
-    "||--o{": "}o--||",
-    "||--o|": "|o--||",
-    "}|--o{": "}o--|{",
-    "}|--o|": "|o--|{",
+    "ZeroOneN": "||--o|{",
+    "ZeroOne": "||--o|",
+    "ZeroN": "||--o{",
+    "OneOnly": "||--||",
+    "OneN": "||--|{",
+    "One": "||--|",
+    "N": "}--{"
 }*/

@@ -219,7 +219,7 @@
     "watch": "npm-run-all -p watch:*",
     "watch:extension": "tsc -watch -p ./",
     "watch:views": "webpack --watch --mode development",
-    "update:dbutils": "npm run compile --prefix \"../../../Npm/db-utils\" && npm install"
+    "update:dbutils": "npm run compile --prefix \"../../../Npm/db-utils\" && npm install \"../../../Npm/db-utils\""
   },
   "version": "0.0.1"
 }

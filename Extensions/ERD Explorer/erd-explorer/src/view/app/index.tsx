@@ -4,17 +4,24 @@ import 'popper.js';
 import mermaid from "mermaid";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
-import { MermaidModel } from "db-utils/out/erd/mermaid-utils";
 import { ErdModel } from "db-utils/out/structure/utils";
+import { MermaidModel } from "db-utils/out/erd/mermaid-utils";
 
 declare global {
   interface Window {
-      acquireVsCodeApi(): any;
+    acquireVsCodeApi(): any;
   }
 }
-
-let model: ErdModel = undefined;
 const vscode = window.acquireVsCodeApi();
+
+let model: ErdModel;
+let erd: string = "";
+let options: { [name: string]: string[] };
+let fullDiagramRelationships = undefined;
+let expandedRelationships: { [relationshipId: string]: any }
+let expandedTables = {};
+let tableList = {};
+let stop = false;
 
 $(document).ready(function () {
   mermaid.contentLoaded();
@@ -27,144 +34,170 @@ mermaid.initialize({
   startOnLoad: false
 });
 
+function updateModel(new_model: ErdModel, target: string) {
+  model = new_model;
+
+  parseModel();
+
+  load(target);
+
+  refresh();
+}
+
+function parseModel() {
+  options = {};
+  fullDiagramRelationships = {};
+  for (let key in model.dbStructure.relationships.items) {
+    let relationship = model.dbStructure.relationships.items[key];
+
+    if (!relationship.endTable.id) {
+      relationship.endTable.id = relationship.startTable.id;
+    }
+
+    let startNodeName = getNodeName(relationship.startTable.id);
+    let endNodeName = getNodeName(relationship.endTable.id);
+    
+    if (!options[startNodeName]) {
+      options[startNodeName] = [];
+    }
+    if (!options[endNodeName]) {
+      options[endNodeName] = [];
+    }
+    options[startNodeName].push(relationship.id);
+    options[endNodeName].push(relationship.id);
+    log("parseModel: " + startNodeName + " " + endNodeName);
+    fullDiagramRelationships[key] = key;
+  }
+
+  $('ol').append("<li id='full'>Full Diagram</li>");
+  for (let key in model.dbStructure.tables.items) {
+    let nodeName = getNodeName(key)
+    $('ol').append("<li id='" + nodeName + "'>" + nodeName + "</li>");
+    tableList[nodeName] = nodeName;
+  }
+  $('li').click(click);
+}
+
+function load(target: string) {
+  erd = "";
+  expandedRelationships = {};
+  expandedTables = {};
+  if (target == "full") {
+    Object.assign(expandedRelationships, fullDiagramRelationships);
+    Object.assign(expandedTables, tableList);
+
+    erd = MermaidModel.getERD(model);
+  } else {
+    log("load: " + target);
+    options[target].forEach(relationshipId => {
+      if (!expandedRelationships[relationshipId]) {
+        expandedRelationships[relationshipId] = relationshipId;
+        let relationship = model.dbStructure.relationships.items[relationshipId];
+        if (!relationship.endTable.id) {
+          relationship.endTable.id = relationship.startTable.id;
+        }
+        erd += "\t" + getNodeName(relationship.startTable.id) + " " + relationships[relationship.relationshipType] + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
+      }
+    });
+    erd = "erDiagram" + erd.split('\n').sort().join('\n');
+  }
+}
+
+var refresh = function () {
+  $('.mermaid').html(erd).removeAttr('data-processed');
+  mermaid.init(undefined, $(".mermaid"));
+  $("g").click(function (e) {
+    expand(e.currentTarget.id);
+    log("refresh: " + e.currentTarget.id)
+  });
+  
+  log(Object.keys(expandedTables).length + " " + Object.keys(tableList).length );
+  for (let tableId in tableList) {
+    if (!expandedTables[tableId]) {
+      let elementSelector = "g#" + tableId;
+      $(elementSelector).children(":first-child").addClass('not-expanded');
+    }
+  }
+}
+
+function click(element) {
+  stop = true;
+  let id = element.target.id;
+  if (id) {
+    load(id);
+    refresh();
+  }
+}
+
+function expand(id) {
+  if (id) {
+    if (!expandedTables[id]) {
+      expandedTables[id] = id;
+      log("expand: " + id);
+      options[id].forEach((relationshipId) => {
+        if (!expandedRelationships[relationshipId]) {
+          let relationship = model.dbStructure.relationships.items[relationshipId];
+          erd += getNodeName(relationship.startTable.id) + " " + relationships[relationship.relationshipType] + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
+        }
+      });
+    } else {
+      collapse(id);
+    }
+    refresh();
+  }
+}
+
+function collapse(id) {
+  delete expandedTables[id];
+  options[id].forEach((relationshipId) => {
+    let relationship = model.dbStructure.relationships.items[relationshipId];
+    erd = erd.replace(getNodeName(relationship.startTable.id) + " " + relationships[relationship.relationshipType] + " " + getNodeName(relationship.endTable.id) + " : \"\"\n", "");
+  });
+}
+
+function getNodeName(tableId) {
+  let table = model.dbStructure.tables.items[tableId];
+  let schema = model.dbStructure.schemas.items[table.schema];
+  return schema.name + "-" + table.name
+}
+
+const relationships = {
+  "ZeroOneN": "||..o|{",
+  "ZeroOne": "||..o|",
+  "ZeroN": "||..o{",
+  "OneOnly": "||..||",
+  "OneN": "||..|{",
+  "One": "||..o|",
+  "N": "||..o{"
+}
 
 // Handle the message inside the webview
 window.addEventListener('message', event => {
-    const message = event.data; // The JSON data our extension sent
+  const message = event.data; // The JSON data our extension sent
 
-    switch (message.command) {
-        case 'loadERD':
-            currentERD = message.text;
-            erdRaw = message.text;
-            erd = parse(message.text);
-            log(message.table)
-            clicked({target: {id: message.table}});
-            break;
-    }
+  switch (message.command) {
+    case 'loadERD':
+      updateModel(message.model, message.target);
+      break;
+  }
 });
 
-window.onerror = function(message, source, lineno, colno, error) {
-    vscode.postMessage({
-        command: 'error',
-        error: {
-        message, 
-        source, 
-        lineno, 
-        colno, 
-        error
-        }
-    });
-} 
+window.onerror = function (message, source, lineno, colno, error) {
+  vscode.postMessage({
+    command: 'error',
+    error: {
+      message,
+      source,
+      lineno,
+      colno,
+      error
+    }
+  });
+}
 
 export function log(message) {
-    vscode.postMessage({
-        command: 'log',
-        message: message
-    })
-}
-
-var flip = function(str) {
-  let out = "";
-  let strArr = str.split("").reverse();
-  strArr.forEach(element => {
-    if (element == "{") {
-      out += "}";
-    } else if (element == "}") {
-      out += "{";
-    } else {
-      out += element;
-    }
-  });
-  return out;
-}
-
-var parse = function(str) {
-  str = str.substr(str.indexOf("\n")+1);
-  var erd = {
-
-  }
-  $('ol').append("<li id='full'>Full Diagram</li>");
-  str.split("\n").forEach((e) => {
-    var f = e.trim();
-    var elems = f.split(" ");
-    if (elems.length == 5) {
-      if (erd[elems[0]]) {
-        erd[elems[0]].push({
-          name: elems[2],
-          relationship: elems[1]
-        });
-      } else {
-        $('ol').append("<li id='" + elems[0] + "'>" + elems[0] + "</li>");
-        erd[elems[0]] = [{
-          name: elems[2],
-          relationship: elems[1]
-        }];
-      }
-
-      if (erd[elems[2]]) {
-        erd[elems[2]].push({
-          name: elems[0],
-          relationship: flip(elems[1])
-        });
-      } else {
-        $('ol').append("<li id='" + elems[2] + "'>" + elems[2] + "</li>");
-        erd[elems[2]] = [{
-          name: elems[0],
-          relationship: flip(elems[1])
-        }];
-      }
-    }
-  });
-
-  for (var key in erd) {
-    erd[key].expanded = false;
-  }
-
-  $('li').click(clicked);
-
-  return erd;
-}
-
-let erd = parse("");
-var erdRaw = "";
-
-var currentERD = "";
-var getMermaid = function(id) {
-  if (id == "full") {
-    return erdRaw;
-  }
-  var out = "erDiagram\n";
-  erd[id].forEach((e) => {
-    out += id + " " + e.relationship + " " + e.name + " : \"\"\n";
-  });
-  currentERD = out;
-  return out;
-}
-
-var expand = function(id) {
-  if (!erd[id].expanded) {
-    erd[id].expanded = true;
-    erd[id].forEach((e) => {
-      var str = id + " " + e.relationship + " " + e.name + " : \"\"\n";
-      var str2 = e.name + " " + flip[e.relationship] + " " + id + " : \"\"\n";
-      if (currentERD.indexOf(str) == -1 && currentERD.indexOf(str2) == -1) {
-        currentERD += str;
-      }
-    });
-  }
-}
-
-var reload = function(content) {
-  $('.mermaid').html(content).removeAttr('data-processed');
-  mermaid.init(undefined, $(".mermaid"));
-  $("g").click(function(e) {
-    expand(e.currentTarget.id);
-    reload(currentERD);
-  });
-}
-
-function clicked(element) {
-  let id = element.target.id;
-  console.log(getMermaid(id));
-  reload(getMermaid(id));
+  vscode.postMessage({
+    command: 'log',
+    message: message
+  })
 }

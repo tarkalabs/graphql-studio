@@ -17,7 +17,7 @@ const enum rightSideRelationships {
 export class MermaidModel {
     static getERD(model: ErdModel) {
         console.log(model);
-        let out = "erDiagram";
+        let out = "";
         if (model.dbStructure.relationships) {
             for (let key in model.dbStructure.relationships.items) {
                 let relationship = model.dbStructure.relationships.items[key];
@@ -47,6 +47,8 @@ export class MermaidModel {
                 }
             }
         }
+
+        out = "erDiagram\n" + out.split('\n').sort().join('\n');
 
         return out;
     }

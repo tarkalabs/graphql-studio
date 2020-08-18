@@ -35,8 +35,8 @@ export default class ViewLoader {
                     case 'getERD':
                         this._panel?.webview.postMessage({
                             command: 'loadERD',
-                            text: MermaidModel.getERD(treeNode.getSchema()),
-                            table: (treeNode.isTable)? treeNode.parent.name + "-" + treeNode.name: 'full'
+                            model: treeNode.getSchema(),
+                            target: (treeNode.isTable)? treeNode.parent.name + "-" + treeNode.name: 'full'
                         });
                         return;
                     case 'error':
