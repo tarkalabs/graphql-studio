@@ -92,15 +92,33 @@ export interface PgTree {
     }[]
 };
 
-export enum RelationshipType {
-    ZeroOneN = "ZeroOneN",
-    ZeroOne = "ZeroOne",
-    ZeroN = "ZeroN",
-    OneOnly = "OneOnly",
-    OneN = "OneN",
-    One = "One",
-    N = "N"
+export enum RelationshipType {      // start : end
+    ZeroOneToOneOnly = "|o..||",    // N/A : fk U
+    ZeroOneToZeroN = "|o..o{",      // N/A : fk N
+    OneOnlyToZeroOne = "||..o|",    // fk U : N/A
+    OneOnlyToOneOnly = "||..||",    // fk U N-N : N/A    OR     N/A : fk U N-N
+    OneOnlyToZeroN = "||..o{",      // N/A : fk N-N
+    ZeroNToZeroOne = "}o..o|",      // fk N : N/A
+    ZeroNToOneOnly = "}o..||",      // fk N-N : N/A
 }
+/* Every relationship
+    ZeroOneToOneOnly = "|o..||",    // N/A : fk U
+    ZeroOneToZeroN = "|o..o{",      // N/A : fk N
+    ZeroOneToOneN = "|o..|{",       // Impossible to infer, implemented programatically
+    OneOnlyToZeroOne = "||..o|",    // fk U : N/A
+    OneOnlyToOneOnly = "||..||",    // fk U N-N : N/A    OR     N/A : fk U N-N
+    OneOnlyToZeroN = "||..o{",      // N/A : fk N-N
+    OneOnlyToOneN = "||..|{",       // Impossible
+    ZeroNToZeroOne = "}o..o|",      // fk N : N/A
+    ZeroNToOneOnly = "}o..||",      // fk N-N : N/A
+    ZeroNToZeroN = "}o..o{",        // Impossible to infer, implemented w/ a junction table
+    ZeroNToOneN = "}o..|{",         // Impossible to infer, implemented w/ a junction table
+    OneNToZeroOne = "}|..o|",       // Impossible to infer, implemented programatically
+    OneNToOneOnly = "}|..||",       // Impossible
+    OneNToZeroN = "}|..o{",         // Impossible to infer, implemented w/ a junction table
+    OneNToOneN = "}|..|{"           // Impossible
+*/
+
 
 //=================================================================
 // Query Result Interfaces

@@ -34,8 +34,11 @@ export class GenerateERD {
     console.log(str);
     //*/
 
+    //Set Relationship Type
     for(let key in model.dbStructure.relationships.items) {
       let relationship = model.dbStructure.relationships.items[key];
+
+      setRelationshipType(model, relationship);
     };
 
     return model;
@@ -191,7 +194,7 @@ export class ErdModel {
     let startTableId = this.getItemId(this.dbStructure.tables, startTableName, startSchemaName);
     let startColumnId = this.getItemId(this.dbStructure.columns, startColumnName, startSchemaName + "." + startTableName);
 
-    let endSchemaName = RowResult.table_schema(row);
+    let endSchemaName = RowResult.fk_table_schema(row);
     let endTableName = RowResult.fk_table_name(row);
     let endColumnName = RowResult.fk_column_name(row);
     let endTableId = this.getItemId(this.dbStructure.tables, endTableName, endSchemaName);
@@ -214,7 +217,7 @@ export class ErdModel {
               endColumnId
             ]
         },
-        relationshipType: RelationshipType.ZeroN,
+        relationshipType: RelationshipType.OneOnlyToOneOnly,
         id: relationshipId
       };
 
@@ -230,7 +233,7 @@ export class ErdModel {
           relationship.startTable.columns.push(endColumnId);
         }
       }
-      relationship.relationshipType = RelationshipType.N;
+      relationship.relationshipType = RelationshipType.OneOnlyToOneOnly;
     }
   }
 
@@ -313,4 +316,60 @@ export class RowResult {
   public static fk_table_name(row: Row) {return row["fk_table_name"]}
   public static fk_column_name(row: Row) {return row["fk_column_name"]}
   public static notnull(row: Row) {return row["notnull"]}
+}
+/*
+  ZeroOneToOneOnly = "|o..||",    // N/A : fk U
+  ZeroOneToZeroN = "|o..o{",      // N/A : fk N
+  OneOnlyToZeroOne = "||..o|",    // fk U : N/A
+  OneOnlyToOneOnly = "||..||",    // fk U N-N : N/A    OR     N/A : fk U N-N
+  OneOnlyToZeroN = "||..o{",      // N/A : fk N-N
+  ZeroNToZeroOne = "}o..o|",      // fk N : N/A
+  ZeroNToOneOnly = "}o..||",      // fk N-N : N/A
+*/
+function setRelationshipType(model: ErdModel, relationship: Relationship) {
+  relationship.startTable.columns.forEach(columnId => {
+    let column = model.dbStructure.columns.items[columnId];
+    if (column.options.foreignKey) {
+      if (column.options.notNull) {
+        if (column.options.unique) {
+          relationship.relationshipType = RelationshipType.OneOnlyToOneOnly;
+          return;
+        } else {
+          relationship.relationshipType = RelationshipType.ZeroNToOneOnly;
+          return;
+        }
+      } else {
+        if (column.options.unique) {
+          relationship.relationshipType = RelationshipType.OneOnlyToZeroOne;
+          return;
+        } else {
+          relationship.relationshipType = RelationshipType.ZeroNToZeroOne;
+          return;
+        }
+      }
+    }
+  });
+
+  relationship.endTable.columns.forEach(columnId => {
+    let column = model.dbStructure.columns.items[columnId];
+    if (column.options.foreignKey) {
+      if (column.options.notNull) {
+        if (column.options.unique) {
+          relationship.relationshipType = RelationshipType.OneOnlyToOneOnly;
+          return;
+        } else {
+          relationship.relationshipType = RelationshipType.OneOnlyToZeroN;
+          return;
+        }
+      } else {
+        if (column.options.unique) {
+          relationship.relationshipType = RelationshipType.ZeroOneToOneOnly;
+          return;
+        } else {
+          relationship.relationshipType = RelationshipType.ZeroOneToZeroN;
+          return;
+        }
+      }
+    }
+  });
 }

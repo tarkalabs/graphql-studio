@@ -96,7 +96,7 @@ function load(target: string) {
         if (!relationship.endTable.id) {
           relationship.endTable.id = relationship.startTable.id;
         }
-        erd += "\t" + getNodeName(relationship.startTable.id) + " " + relationships[relationship.relationshipType] + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
+        erd += "\t" + getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
       }
     });
     erd = "erDiagram" + erd.split('\n').sort().join('\n');
@@ -137,7 +137,7 @@ function expand(id) {
       options[id].forEach((relationshipId) => {
         if (!expandedRelationships[relationshipId]) {
           let relationship = model.dbStructure.relationships.items[relationshipId];
-          erd += getNodeName(relationship.startTable.id) + " " + relationships[relationship.relationshipType] + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
+          erd += getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
         }
       });
     } else {
@@ -151,7 +151,7 @@ function collapse(id) {
   delete expandedTables[id];
   options[id].forEach((relationshipId) => {
     let relationship = model.dbStructure.relationships.items[relationshipId];
-    erd = erd.replace(getNodeName(relationship.startTable.id) + " " + relationships[relationship.relationshipType] + " " + getNodeName(relationship.endTable.id) + " : \"\"\n", "");
+    erd = erd.replace(getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n", "");
   });
 }
 
@@ -159,16 +159,6 @@ function getNodeName(tableId) {
   let table = model.dbStructure.tables.items[tableId];
   let schema = model.dbStructure.schemas.items[table.schema];
   return schema.name + "-" + table.name
-}
-
-const relationships = {
-  "ZeroOneN": "||..o|{",
-  "ZeroOne": "||..o|",
-  "ZeroN": "||..o{",
-  "OneOnly": "||..||",
-  "OneN": "||..|{",
-  "One": "||..o|",
-  "N": "||..o{"
 }
 
 // Handle the message inside the webview

@@ -14,9 +14,17 @@ const enum rightSideRelationships {
     OneN = "|{"
 }
 
+/*
+    ZeroOneToOneOnly = "|o..||",    // N/A : fk U
+    ZeroOneToZeroN = "|o..o{",      // N/A : fk N
+    OneOnlyToZeroOne = "||..o|",    // fk U : N/A
+    OneOnlyToOneOnly = "||..||",    // fk U N-N : N/A    OR     N/A : fk U N-N
+    OneOnlyToZeroN = "||..o{",      // N/A : fk N-N
+    ZeroNToZeroOne = "}o..o|",      // fk N : N/A
+    ZeroNToOneOnly = "}o..||",      // fk N-N : N/A
+*/
 export class MermaidModel {
     static getERD(model: ErdModel) {
-        console.log(model);
         let out = "";
         if (model.dbStructure.relationships) {
             for (let key in model.dbStructure.relationships.items) {
@@ -27,23 +35,7 @@ export class MermaidModel {
                     out += "\n";
                     let startSchema = model.dbStructure.schemas.items[startTable.schema];
                     let endSchema = model.dbStructure.schemas.items[endTable.schema];
-                    switch (relationship.relationshipType) {
-                        case RelationshipType.N:
-                        case RelationshipType.ZeroN:
-                            out += "\t" + startSchema.name.replace("_", "") + "-" + startTable.name.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroN + " " + endSchema.name.replace("_", "") + "-" + endTable.name.replace("_", "") + " : \"\"";
-                            break;
-                        case RelationshipType.ZeroOne:
-                        case RelationshipType.One:
-                            out += "\t" + startSchema.name.replace("_", "") + "-" + startTable.name.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroOne + " " + endSchema.name.replace("_", "") + "-" + endTable.name.replace("_", "") + " : \"\"";
-                            break;
-                        case RelationshipType.OneOnly:
-                            out += "\t" + startSchema.name.replace("_", "") + "-" + startTable.name.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.ZeroOne + " " + endSchema.name.replace("_", "") + "-" + endTable.name.replace("_", "") + " : \"\"";
-                            break;
-                        case RelationshipType.ZeroOneN:
-                        case RelationshipType.OneN:
-                            out += "\t" + startSchema.name.replace("_", "") + "-" + startTable.name.replace("_", "") + " " + leftSideRelationships.OneOnly + ".." + rightSideRelationships.OneN + " " + endSchema.name.replace("_", "") + "-" + endTable.name.replace("_", "") + " : \"\"";
-                            break;
-                    }
+                    out += "\t" + startSchema.name.replace("_", "") + "-" + startTable.name.replace("_", "") + " " + relationship.relationshipType + " " + endSchema.name.replace("_", "") + "-" + endTable.name.replace("_", "") + " : \"\"";
                 }
             }
         }
