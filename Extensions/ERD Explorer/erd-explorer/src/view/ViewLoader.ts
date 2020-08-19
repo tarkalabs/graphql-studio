@@ -65,11 +65,6 @@ export default class ViewLoader {
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <title>ERD View</title>
-                        <!--meta http-equiv="Content-Security-Policy"
-                            content="default-src 'none';
-                            img-src https:;
-                            script-src 'unsafe-eval' 'unsafe-inline' vscode-resource:;
-                            style-src vscode-resource: 'unsafe-inline';"-->
                         <script>
                             window.acquireVsCodeApi = acquireVsCodeApi;
                         </script>

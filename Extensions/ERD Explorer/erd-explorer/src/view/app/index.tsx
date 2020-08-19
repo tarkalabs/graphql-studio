@@ -20,8 +20,8 @@ let options: { [name: string]: string[] };
 let fullDiagramRelationships = undefined;
 let expandedRelationships: { [relationshipId: string]: any }
 let expandedTables = {};
+let visibleTables = {};
 let tableList = {};
-let stop = false;
 
 $(document).ready(function () {
   mermaid.contentLoaded();
@@ -82,13 +82,16 @@ function load(target: string) {
   erd = "";
   expandedRelationships = {};
   expandedTables = {};
+  visibleTables = {};
   if (target == "full") {
     Object.assign(expandedRelationships, fullDiagramRelationships);
     Object.assign(expandedTables, tableList);
+    Object.assign(visibleTables, tableList);
 
     erd = MermaidModel.getERD(model);
   } else {
     log("load: " + target);
+    visibleTables[target] = target;
     options[target].forEach(relationshipId => {
       if (!expandedRelationships[relationshipId]) {
         expandedRelationships[relationshipId] = relationshipId;
@@ -96,6 +99,8 @@ function load(target: string) {
         if (!relationship.endTable.id) {
           relationship.endTable.id = relationship.startTable.id;
         }
+        visibleTables[getNodeName(relationship.startTable.id)] = getNodeName(relationship.startTable.id);
+        visibleTables[getNodeName(relationship.endTable.id)] = getNodeName(relationship.endTable.id);
         erd += "\t" + getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
       }
     });
@@ -121,7 +126,6 @@ var refresh = function () {
 }
 
 function click(element) {
-  stop = true;
   let id = element.target.id;
   if (id) {
     load(id);
@@ -137,6 +141,8 @@ function expand(id) {
       options[id].forEach((relationshipId) => {
         if (!expandedRelationships[relationshipId]) {
           let relationship = model.dbStructure.relationships.items[relationshipId];
+          visibleTables[getNodeName(relationship.startTable.id)] = getNodeName(relationship.startTable.id);
+          visibleTables[getNodeName(relationship.endTable.id)] = getNodeName(relationship.endTable.id);
           erd += getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
         }
       });
@@ -151,14 +157,36 @@ function collapse(id) {
   delete expandedTables[id];
   options[id].forEach((relationshipId) => {
     let relationship = model.dbStructure.relationships.items[relationshipId];
-    erd = erd.replace(getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n", "");
+    let occurrences = [0, 0];
+    erd.substring(erd.indexOf("\n")+1).split("\n").map(line => {
+      if (line.split(" ")[0] == getNodeName(relationship.startTable.id) || line.split(" ")[2] == getNodeName(relationship.startTable.id)) {
+        occurrences[0]++;
+      }
+      if (line.split(" ")[0] == getNodeName(relationship.endTable.id) || line.split(" ")[2] == getNodeName(relationship.endTable.id)) {
+        occurrences[1]++;
+      }
+    });
+
+    let deleteRelationship = false;
+    if (id == getNodeName(relationship.startTable.id)) {
+      if (occurrences[1] == 1) {
+        deleteRelationship = true;
+      }
+    } else {
+      if (occurrences[0] == 1) {
+        deleteRelationship = true;
+      }
+    }
+    if (deleteRelationship) {
+      erd = erd.replace(getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n", "");
+    }
   });
 }
 
 function getNodeName(tableId) {
   let table = model.dbStructure.tables.items[tableId];
   let schema = model.dbStructure.schemas.items[table.schema];
-  return schema.name + "-" + table.name
+  return (schema.name + "-" + table.name).replace("_", "");
 }
 
 // Handle the message inside the webview
