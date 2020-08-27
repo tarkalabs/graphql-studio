@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { INode } from 'src/interfaces/INode';
-import { IConnection } from '@tarkalabs/pg-db-utils'
+import { IConnection, Connection, getStructure, ErdModel } from '@tarkalabs/pg-db-utils'
 import { DatabaseNode } from './databaseNode';
 import { InfoNode } from './infoNode';
 
@@ -10,15 +10,17 @@ export class ConnectionNode implements INode {
   public name = "";
   public parent: INode = null;
 
-  constructor(public readonly id: string, private readonly connection: IConnection) {}
+  constructor(public readonly id: string, private readonly connection: IConnection) {
+  }
 
   public getSchema(): any {
     return null;
   }
 
   public getTreeItem(): vscode.TreeItem {
+    let label = (this.connection.label || this.connection.host);
     return {
-      label: this.connection.label || this.connection.host,
+      label: label,
       collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
       contextValue: "vscode-postgres.tree.connection",
       command: {
@@ -35,7 +37,7 @@ export class ConnectionNode implements INode {
 
   public async getChildren(): Promise<INode[]> {
     if (this.connection.database) {
-      return [new DatabaseNode(this.connection, this.connection.database, this)];
+      return [new DatabaseNode(this.connection, this)];
     }
 
     // GET ALL DATABASES
@@ -52,7 +54,7 @@ export class ConnectionNode implements INode {
       /*/
       
     //  return res.rows.map<DatabaseNode>(database => {
-        return [new DatabaseNode(this.connection, this.connection.database, this)];
+        return [new DatabaseNode(this.connection, this)];
       //});
     } catch(err) {
       return [new InfoNode(err, this)];

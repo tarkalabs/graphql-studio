@@ -162,13 +162,14 @@
     }
   },
   "dependencies": {
+    "@tarkalabs/pg-db-utils": "^1.0.15",
     "bootstrap": "^4.5.0",
-    "@tarkalabs/pg-db-utils": "^1.0.13",
     "dotenv": "^8.2.0",
     "dotenvrc": "^1.0.1",
     "jquery": "^3.5.1",
     "keytar": "^6.0.1",
     "mermaid": "^8.5.2",
+    "pg-connection-string": "^2.3.0",
     "popper.js": "^1.16.1"
   },
   "description": "",
@@ -219,7 +220,8 @@
     "watch": "npm-run-all -p watch:*",
     "watch:extension": "tsc -watch -p ./",
     "watch:views": "webpack --watch --mode development",
-    "update:dbutils": "npm run compile --prefix \"../../../Npm/db-utils\" && npm install \"../../../Npm/db-utils\""
+    "debug:pg-db-utils": "npm run compile --prefix \"../../../../pg-db-utils\" && npm install \"../../../../pg-db-utils\"",
+    "prod:pg-db-utils": "npm install @tarkalabs/pg-db-utils"
   },
   "version": "0.0.1",
   "publisher": "tarkalabs"

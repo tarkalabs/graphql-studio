@@ -12,23 +12,17 @@ import { ConnectionNode } from './connectionNode';
 export class DatabaseNode implements INode {
   public isTable = false;
   public name = "";
-  private schema: ErdModel;
   public parent: INode = null;
+  private schema: ErdModel;
 
-  constructor(private readonly connection: IConnection, private readonly dbName: string, private readonly connectionNode: ConnectionNode) {
-    Connection.setup({
-      label: connection.label,
-      host: connection.host,
-      user: connection.user,
-      password: connection.password,
-      port: connection.port,
-      database: dbName
-    });
+  constructor(private readonly connection: IConnection, private readonly connectionNode: ConnectionNode) {
     this.parent = connectionNode;
-    getStructure().then(new_schema => {
-      this.schema = new_schema
-      console.log(this.schema.getItemById);
-    });
+
+    if (Connection.ready) {
+      getStructure().then(new_schema => {
+        this.schema = new_schema
+      });
+    }
   }
 
   public getSchema() {

@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import { INode } from '../interfaces/INode';
-import { IConnection } from '@tarkalabs/pg-db-utils'
 import { ConnectionNode } from './connectionNode';
-import { Global } from 'src/common/Global';
-import { Connection } from '@tarkalabs/pg-db-utils'
+import { IConnection, Connection, getStructure } from '@tarkalabs/pg-db-utils';
+var parse = require('pg-connection-string').parse;
 
 export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode> {
 
@@ -39,14 +38,27 @@ export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode
   private async getConnectionNodes(): Promise<INode[]> {
     const ConnectionNodes = [];
 
-    ConnectionNodes.push(new ConnectionNode("1", {
-      label: process.env.PGLABEL,
-      host: process.env.PGHOST,
-      user: process.env.PGUSER,
-      password: process.env.PGPASSWORD,
-      port: parseInt(process.env.PGPORT),
-      database: process.env.PGDATABASE
-    }));
+    let conn: IConnection;
+    if (process.env.DATABASE_URL) {
+      conn = parse(process.env.DATABASE_URL);
+    } else {
+      conn = {
+        label: process.env.PGLABEL,
+        host: process.env.PGHOST,
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        port: parseInt(process.env.PGPORT),
+        database: process.env.PGDATABASE
+      }
+    }
+
+    try {
+      await Connection.setup(conn);
+    } catch(e) {
+      conn.label = (conn.label || conn.host) + " : Failed To Connect";
+    } 
+
+    ConnectionNodes.push(new ConnectionNode("1", conn));
 
     return ConnectionNodes;
   }
