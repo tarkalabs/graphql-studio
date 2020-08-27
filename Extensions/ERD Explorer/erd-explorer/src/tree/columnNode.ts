@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { INode } from 'src/interfaces/INode';
-import { IConnection } from 'db-utils/out/db/IConnection';
+import { IConnection } from '@tarkalabs/pg-db-utils'
 import { IColumn } from 'src/interfaces/IColumn';
 import { SchemaNode } from './schemaNode';
 import { TableNode } from './tableNode';

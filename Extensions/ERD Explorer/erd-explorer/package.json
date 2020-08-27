@@ -163,7 +163,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
-    "db-utils": "file:../../../Npm/db-utils",
+    "@tarkalabs/pg-db-utils": "^1.0.13",
     "dotenv": "^8.2.0",
     "dotenvrc": "^1.0.1",
     "jquery": "^3.5.1",
@@ -221,5 +221,6 @@
     "watch:views": "webpack --watch --mode development",
     "update:dbutils": "npm run compile --prefix \"../../../Npm/db-utils\" && npm install \"../../../Npm/db-utils\""
   },
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "publisher": "tarkalabs"
 }

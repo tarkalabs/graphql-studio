@@ -3,7 +3,7 @@ import * as path from 'path';
 import { FunctionNode } from "./functionNode";
 import { InfoNode } from "./infoNode";
 import { INode } from 'src/interfaces/INode';
-import { IConnection } from 'db-utils/out/db/IConnection';
+import { IConnection } from '@tarkalabs/pg-db-utils'
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 
 export class FunctionFolderNode implements INode {

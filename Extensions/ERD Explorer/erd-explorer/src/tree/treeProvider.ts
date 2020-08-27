@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { INode } from '../interfaces/INode';
-import { IConnection } from 'db-utils/out/db/IConnection';
+import { IConnection } from '@tarkalabs/pg-db-utils'
 import { ConnectionNode } from './connectionNode';
 import { Global } from 'src/common/Global';
-import { Connection } from 'db-utils/out/db/connection';
+import { Connection } from '@tarkalabs/pg-db-utils'
 
 export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode> {
 

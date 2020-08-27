@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ErdModel } from 'db-utils/out/structure/utils';
+import { ErdModel } from '@tarkalabs/pg-db-utils';
 
 export interface INode {
   isTable: boolean;

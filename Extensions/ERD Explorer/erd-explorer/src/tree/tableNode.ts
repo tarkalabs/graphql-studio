@@ -1,10 +1,10 @@
 import { INode } from "src/interfaces/INode";
-import { IConnection } from "db-utils/out/db/IConnection";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import path = require("path");
 import { ColumnNode } from "./columnNode";
 import { InfoNode } from "./infoNode";
 import { SchemaNode } from "./schemaNode";
+import { IConnection } from "@tarkalabs/pg-db-utils";
 
 
 export class TableNode implements INode {

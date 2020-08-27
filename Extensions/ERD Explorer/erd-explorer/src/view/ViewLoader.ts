@@ -1,9 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { MermaidModel } from "db-utils/out/erd/mermaid-utils";
-import { getStructure} from "db-utils";
 import { INode } from "src/interfaces/INode";
-import { TableNode } from "src/tree/tableNode";
 
 export default class ViewLoader {
     private readonly _panel: vscode.WebviewPanel | undefined;
@@ -33,6 +30,7 @@ export default class ViewLoader {
             message => {
                 switch (message.command) {
                     case 'getERD':
+                        console.log(treeNode.getSchema());
                         this._panel?.webview.postMessage({
                             command: 'loadERD',
                             model: treeNode.getSchema(),
@@ -78,7 +76,8 @@ export default class ViewLoader {
                                 </ol>
                             </div>
                             <div class="mermaid" id="mermaid">
-                                
+                                erDiagram
+                                A ||..|| B : "ASD"
                             </div>
                         </div>
                         <script crossorigin src="${reactAppUri}"></script>

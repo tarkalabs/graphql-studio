@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { INode } from 'src/interfaces/INode';
-import { IConnection } from 'db-utils/out/db/IConnection';
+import { IConnection } from '@tarkalabs/pg-db-utils'
 import { DatabaseNode } from './databaseNode';
 import { InfoNode } from './infoNode';
 

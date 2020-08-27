@@ -11,10 +11,6 @@
 		{
 			"name": "Extension Source",
 			"path": "Extensions"
-		},
-		{
-			"name": "Npm Package Source",
-			"path": "Npm"
 		}
 	],
 	"settings": {

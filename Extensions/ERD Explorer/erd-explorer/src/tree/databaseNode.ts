@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { INode } from 'src/interfaces/INode';
-import { IConnection } from 'db-utils/out/db/IConnection';
+import { IConnection } from '@tarkalabs/pg-db-utils'
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { SchemaNode } from './schemaNode';
 import { InfoNode } from './infoNode';
-import { getStructure } from 'db-utils';
-import { ErdModel } from 'db-utils/out/structure/utils';
-import { Connection } from 'db-utils/out/db/connection';
+import { getStructure } from '@tarkalabs/pg-db-utils'
+import { ErdModel } from '@tarkalabs/pg-db-utils'
+import { Connection } from '@tarkalabs/pg-db-utils'
 import { ConnectionNode } from './connectionNode';
 
 export class DatabaseNode implements INode {

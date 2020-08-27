@@ -4,8 +4,7 @@ import 'popper.js';
 import mermaid from "mermaid";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
-import { ErdModel } from "db-utils/out/structure/utils";
-import { MermaidModel } from "db-utils/out/erd/mermaid-utils";
+import { ErdModel, MermaidModel } from "@tarkalabs/pg-db-utils";
 
 declare global {
   interface Window {

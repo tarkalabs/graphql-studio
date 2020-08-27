@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
   entry: {
@@ -80,5 +81,16 @@ module.exports = {
   },
   performance: {
     hints: false
+  },
+  plugins: [
+    new webpack.IgnorePlugin(/^pg-native$/)
+  ],
+  node: {
+    fs: "empty",
+    child_process: 'empty',
+    crypto: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    dns: "empty",
   }
 };

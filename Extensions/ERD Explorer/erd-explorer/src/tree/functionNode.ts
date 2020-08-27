@@ -2,7 +2,7 @@
 import * as path from 'path';
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { INode } from 'src/interfaces/INode';
-import { IConnection } from 'db-utils/out/db/IConnection';
+import { IConnection } from '@tarkalabs/pg-db-utils'
 
 export class FunctionNode implements INode {
   constructor(public readonly connection: IConnection
