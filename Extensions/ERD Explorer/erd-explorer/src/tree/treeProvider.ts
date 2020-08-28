@@ -52,13 +52,12 @@ export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode
       }
     }
 
-    try {
-      await Connection.setup(conn);
-    } catch(e) {
+    let connection: Connection = new Connection(conn);
+    if (!await connection.testConnection()) {
       conn.label = (conn.label || conn.host) + " : Failed To Connect";
-    } 
-
-    ConnectionNodes.push(new ConnectionNode("1", conn));
+    } else {
+      ConnectionNodes.push(new ConnectionNode("1", connection, conn));
+    }
 
     return ConnectionNodes;
   }

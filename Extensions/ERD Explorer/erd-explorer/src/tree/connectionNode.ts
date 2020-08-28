@@ -10,15 +10,19 @@ export class ConnectionNode implements INode {
   public name = "";
   public parent: INode = null;
 
-  constructor(public readonly id: string, private readonly connection: IConnection) {
+  constructor(public readonly id: string, private readonly connection: Connection, private readonly connectionOptions: IConnection) {
   }
 
   public getSchema(): any {
     return null;
   }
 
+  public getConnection(): Connection {
+    return this.connection;
+  }
+
   public getTreeItem(): vscode.TreeItem {
-    let label = (this.connection.label || this.connection.host);
+    let label = (this.connectionOptions.label || this.connectionOptions.host);
     return {
       label: label,
       collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
@@ -36,8 +40,8 @@ export class ConnectionNode implements INode {
   }
 
   public async getChildren(): Promise<INode[]> {
-    if (this.connection.database) {
-      return [new DatabaseNode(this.connection, this)];
+    if (this.connectionOptions.database) {
+      return [new DatabaseNode(this.connectionOptions, this)];
     }
 
     // GET ALL DATABASES
@@ -54,7 +58,7 @@ export class ConnectionNode implements INode {
       /*/
       
     //  return res.rows.map<DatabaseNode>(database => {
-        return [new DatabaseNode(this.connection, this)];
+        return [new DatabaseNode(this.connectionOptions, this)];
       //});
     } catch(err) {
       return [new InfoNode(err, this)];

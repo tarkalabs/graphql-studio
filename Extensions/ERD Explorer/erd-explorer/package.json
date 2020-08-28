@@ -162,7 +162,7 @@
     }
   },
   "dependencies": {
-    "@tarkalabs/pg-db-utils": "^1.0.15",
+    "@tarkalabs/pg-db-utils": "^1.1.1",
     "bootstrap": "^4.5.0",
     "dotenv": "^8.2.0",
     "dotenvrc": "^1.0.1",
@@ -220,8 +220,8 @@
     "watch": "npm-run-all -p watch:*",
     "watch:extension": "tsc -watch -p ./",
     "watch:views": "webpack --watch --mode development",
-    "debug:pg-db-utils": "npm run compile --prefix \"../../../../pg-db-utils\" && npm install \"../../../../pg-db-utils\"",
-    "prod:pg-db-utils": "npm install @tarkalabs/pg-db-utils"
+    "debug:pg-db-utils": "npm run compile --prefix \"../../../../pg-db-utils\" && npm install \"../../../../pg-db-utils\" && cp -R ./node_modules/@tarkalabs/pg-db-utils/out/* ./node_modules/@tarkalabs/pg-db-utils",
+    "prod:pg-db-utils": "npm install --save @tarkalabs/pg-db-utils"
   },
   "version": "0.0.1",
   "publisher": "tarkalabs"

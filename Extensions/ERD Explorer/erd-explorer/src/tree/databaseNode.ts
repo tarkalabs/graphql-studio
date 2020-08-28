@@ -18,11 +18,14 @@ export class DatabaseNode implements INode {
   constructor(private readonly connection: IConnection, private readonly connectionNode: ConnectionNode) {
     this.parent = connectionNode;
 
-    if (Connection.ready) {
-      getStructure().then(new_schema => {
+    getStructure(connectionNode.getConnection()).then(new_schema => {
+      if (new_schema) {
         this.schema = new_schema
-      });
-    }
+        console.log(this.schema);
+      } else {
+        console.error("Dbms Structure was not parsed correctly.");
+      }
+    });
   }
 
   public getSchema() {
