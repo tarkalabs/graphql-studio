@@ -6,7 +6,6 @@ import { SchemaNode } from './schemaNode';
 import { InfoNode } from './infoNode';
 import { getStructure } from '@tarkalabs/pg-db-utils'
 import { ErdModel } from '@tarkalabs/pg-db-utils'
-import { Connection } from '@tarkalabs/pg-db-utils'
 import { ConnectionNode } from './connectionNode';
 
 export class DatabaseNode implements INode {

@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import { INode } from '../interfaces/INode';
 import { ConnectionNode } from './connectionNode';
-import { IConnection, Connection, getStructure } from '@tarkalabs/pg-db-utils';
+import { IConnection, Connection } from '@tarkalabs/pg-db-utils';
+import { InfoNode } from './infoNode';
 var parse = require('pg-connection-string').parse;
 
 export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode> {
@@ -36,7 +37,7 @@ export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode
   }
 
   private async getConnectionNodes(): Promise<INode[]> {
-    const ConnectionNodes = [];
+    const ConnectionNodes: INode[] = [];
 
     let conn: IConnection;
     if (process.env.DATABASE_URL) {
@@ -54,7 +55,7 @@ export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode
 
     let connection: Connection = new Connection(conn);
     if (!await connection.testConnection()) {
-      conn.label = (conn.label || conn.host) + " : Failed To Connect";
+      ConnectionNodes.push(new InfoNode("Failed To Connect To Database", null));
     } else {
       ConnectionNodes.push(new ConnectionNode("1", connection, conn));
     }

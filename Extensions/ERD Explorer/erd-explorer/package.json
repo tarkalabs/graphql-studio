@@ -92,11 +92,6 @@
       "view/item/context": [
         {
           "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.connection",
-          "group": "postgres@1"
-        },
-        {
-          "command": "erd-explorer.viewERD",
           "when": "view == postgres && viewItem == vscode-postgres.tree.schema",
           "group": "postgres@1"
         },
