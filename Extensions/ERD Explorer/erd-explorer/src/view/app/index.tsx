@@ -15,12 +15,19 @@ const vscode = window.acquireVsCodeApi();
 
 let model: ErdModel;
 let erd: string = "";
-let options: { [name: string]: string[] };
-let fullDiagramRelationships = undefined;
-let expandedRelationships: { [relationshipId: string]: any }
-let expandedTables = {};
-let visibleTables = {};
+//let options: { [name: string]: string[] };
+//let fullDiagramRelationships = undefined;
+//let expandedRelationships: { [relationshipId: string]: any }
+//let expandedTables = {};
+//let visibleTables = {};
 let tableList = {};
+
+let relationships: Set<string> = new Set();
+let activeRelationships: Set<string> = new Set();
+let tables: Set<string> = new Set();
+let activeTables: { [tableName: string]: boolean } = {}; // true = expanded, false = not expanded
+let tableRelationships: { [tableName: string]: string[] } = {};
+let rootTable = "";
 
 $(document).ready(function () {
   mermaid.contentLoaded();
@@ -29,8 +36,14 @@ $(document).ready(function () {
   })
 });
 
+let theme = "default";
+if (!$('body').hasClass("vscode-light")) {
+  theme = "dark"
+}
+
 mermaid.initialize({
-  startOnLoad: false
+  startOnLoad: false,
+  theme: theme
 });
 
 function updateModel(new_model: ErdModel, target: string) {
@@ -44,8 +57,6 @@ function updateModel(new_model: ErdModel, target: string) {
 }
 
 function parseModel() {
-  options = {};
-  fullDiagramRelationships = {};
   for (let key in model.dbStructure.relationships.items) {
     let relationship = model.dbStructure.relationships.items[key];
 
@@ -56,16 +67,21 @@ function parseModel() {
     let startNodeName = getNodeName(relationship.startTable.id);
     let endNodeName = getNodeName(relationship.endTable.id);
     
-    if (!options[startNodeName]) {
-      options[startNodeName] = [];
+    tables.add(startNodeName);
+    tables.add(endNodeName);
+
+    let relationshipString = startNodeName + " " + relationship.relationshipType + " " + endNodeName + " : \"\"";
+
+    relationships.add(relationshipString);
+
+    if (!tableRelationships[startNodeName]) {
+      tableRelationships[startNodeName] = [];
     }
-    if (!options[endNodeName]) {
-      options[endNodeName] = [];
+    if (!tableRelationships[endNodeName]) {
+      tableRelationships[endNodeName] = [];
     }
-    options[startNodeName].push(relationship.id);
-    options[endNodeName].push(relationship.id);
-    log("parseModel: " + startNodeName + " " + endNodeName);
-    fullDiagramRelationships[key] = key;
+    tableRelationships[startNodeName].push(relationshipString);
+    tableRelationships[endNodeName].push(relationshipString);
   }
 
   $('ol').append("<li id='full'>Full Diagram</li>");
@@ -79,49 +95,63 @@ function parseModel() {
 
 function load(target: string) {
   erd = "";
-  expandedRelationships = {};
-  expandedTables = {};
-  visibleTables = {};
   if (target == "full") {
-    Object.assign(expandedRelationships, fullDiagramRelationships);
-    Object.assign(expandedTables, tableList);
-    Object.assign(visibleTables, tableList);
-
     erd = MermaidModel.getERD(model);
+
+    activeRelationships = new Set(relationships.keys());
+    tables.forEach(table => {
+      activeTables[table] = true;
+    })
+    rootTable = "";
   } else {
-    log("load: " + target);
-    visibleTables[target] = target;
-    options[target].forEach(relationshipId => {
-      if (!expandedRelationships[relationshipId]) {
-        expandedRelationships[relationshipId] = relationshipId;
-        let relationship = model.dbStructure.relationships.items[relationshipId];
-        if (!relationship.endTable.id) {
-          relationship.endTable.id = relationship.startTable.id;
-        }
-        visibleTables[getNodeName(relationship.startTable.id)] = getNodeName(relationship.startTable.id);
-        visibleTables[getNodeName(relationship.endTable.id)] = getNodeName(relationship.endTable.id);
-        erd += "\t" + getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
+    activeTables = {};
+    activeRelationships = new Set();
+
+    rootTable = target;
+    activeTables[rootTable] = false;
+    expand(rootTable);
+    /*
+    activeTables[target] = true;
+    tableRelationships[target].forEach(relationship => {
+      let rSplit = relationship.split(" ");
+      let t1 = rSplit[0];
+      let t2 = rSplit[2];
+      if (activeTables[t1] == undefined) {
+        activeTables[t1] = false;
       }
-    });
-    erd = "erDiagram" + erd.split('\n').sort().join('\n');
+      if (activeTables[t2] == undefined) {
+        activeTables[t2] = false;
+      }
+      activeRelationships.add(relationship);
+    });*/
   }
 }
 
 var refresh = function () {
-  $('.mermaid').html(erd).removeAttr('data-processed');
+  if (rootTable != "") {
+    erd = "erDiagram"
+    activeRelationships.forEach(relationship => {
+      erd += "\n\t" + relationship;
+    });
+  }
+  $('.mermaid').html(erd.replace(/\./g, "-")).removeAttr('data-processed');
   mermaid.init(undefined, $(".mermaid"));
   $("g").click(function (e) {
     expand(e.currentTarget.id);
-    log("refresh: " + e.currentTarget.id)
   });
   
-  log(Object.keys(expandedTables).length + " " + Object.keys(tableList).length );
-  for (let tableId in tableList) {
-    if (!expandedTables[tableId]) {
-      let elementSelector = "g#" + tableId;
+  tables.forEach(table => {
+    if (table == rootTable || rootTable == "") {
+      let elementSelector = "g#" + table;
+      $(elementSelector).children(":first-child").addClass('root-table');
+    } else if (!activeTables[table]) {
+      let elementSelector = "g#" + table;
       $(elementSelector).children(":first-child").addClass('not-expanded');
+    } else {
+      let elementSelector = "g#" + table;
+      $(elementSelector).children(":first-child").addClass('expanded');
     }
-  }
+  });
 }
 
 function click(element) {
@@ -134,15 +164,40 @@ function click(element) {
 
 function expand(id) {
   if (id) {
-    if (!expandedTables[id]) {
-      expandedTables[id] = id;
-      log("expand: " + id);
-      options[id].forEach((relationshipId) => {
-        if (!expandedRelationships[relationshipId]) {
-          let relationship = model.dbStructure.relationships.items[relationshipId];
-          visibleTables[getNodeName(relationship.startTable.id)] = getNodeName(relationship.startTable.id);
-          visibleTables[getNodeName(relationship.endTable.id)] = getNodeName(relationship.endTable.id);
-          erd += getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n";
+    if (activeTables[id] == false) {
+      activeTables[id] = true;
+
+      let checkRelationships = new Set<string>();
+      tableRelationships[id].forEach(relationship => {
+        let rSplit = relationship.split(" ");
+        let t1 = rSplit[0];
+        let t2 = rSplit[2];
+        if (activeTables[t1] == undefined) {
+          activeTables[t1] = false;
+          checkRelationships.add(t1);
+        }
+        if (activeTables[t2] == undefined) {
+          activeTables[t2] = false;
+          checkRelationships.add(t2);
+        }
+        activeRelationships.add(relationship);
+      });
+      tables.forEach(table => {
+        if (activeTables[table] != undefined) {
+          let isExpanded = true;
+          tableRelationships[table].forEach(relationship => {
+            let rSplit = relationship.split(" ");
+            let t1 = rSplit[0];
+            let t2 = rSplit[2];
+            if (activeTables[t1] != undefined && activeTables[t2] != undefined) {
+              activeRelationships.add(relationship);
+            } else {
+              isExpanded = false;
+            }
+          });
+          if (isExpanded) {
+            activeTables[table] = true;
+          }
         }
       });
     } else {
@@ -153,31 +208,44 @@ function expand(id) {
 }
 
 function collapse(id) {
-  delete expandedTables[id];
-  options[id].forEach((relationshipId) => {
-    let relationship = model.dbStructure.relationships.items[relationshipId];
-    let occurrences = [0, 0];
-    erd.substring(erd.indexOf("\n")+1).split("\n").map(line => {
-      if (line.split(" ")[0] == getNodeName(relationship.startTable.id) || line.split(" ")[2] == getNodeName(relationship.startTable.id)) {
-        occurrences[0]++;
-      }
-      if (line.split(" ")[0] == getNodeName(relationship.endTable.id) || line.split(" ")[2] == getNodeName(relationship.endTable.id)) {
-        occurrences[1]++;
-      }
-    });
+  if (id && (id == rootTable || rootTable == "")) {
+    log("Cannot Collapse Root Node");
+    return;
+  }
 
-    let deleteRelationship = false;
-    if (id == getNodeName(relationship.startTable.id)) {
-      if (occurrences[1] == 1) {
-        deleteRelationship = true;
-      }
-    } else {
-      if (occurrences[0] == 1) {
-        deleteRelationship = true;
-      }
+  activeTables[id] = false;
+  let checkRelationships = new Set<string>();
+  tableRelationships[id].forEach(relationship => {
+    let rSplit = relationship.split(" ");
+    let t1 = rSplit[0];
+    let t2 = rSplit[2];
+    let other = (id == t1)? t2: t1;
+
+    if (activeTables[other] == false) {
+      checkRelationships.add(other);
     }
-    if (deleteRelationship) {
-      erd = erd.replace(getNodeName(relationship.startTable.id) + " " + relationship.relationshipType + " " + getNodeName(relationship.endTable.id) + " : \"\"\n", "");
+  });
+  tables.forEach(table => {
+    if (activeTables[table] == false) {
+      let orphanTable = true;
+      tableRelationships[table].forEach(relationship => {
+        let rSplit = relationship.split(" ");
+        let t1 = rSplit[0];
+        let t2 = rSplit[2];
+        let other = (table == t1)? t2: t1;
+
+        log(table + " " + other + ":" + activeTables[other]);
+
+        if (activeTables[other] == true) {
+          orphanTable = false;
+        }
+      });
+      if (orphanTable) {
+        delete activeTables[table];
+        tableRelationships[table].forEach(relationship => {
+          activeRelationships.delete(relationship);
+        });
+      }
     }
   });
 }

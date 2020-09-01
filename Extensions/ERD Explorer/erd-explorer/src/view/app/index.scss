@@ -1,6 +1,64 @@
 @import "~bootstrap/scss/bootstrap";
 
-.not-expanded {
-    //fill: red !important;
-    stroke: red !important;
+body.vscode-light {
+    text {
+        fill: black !important;
+    }
+    background-color: var(--vscode-editor-background);
+    .root-table {
+        fill: rgb(142, 240, 255) !important;
+        stroke: black !important;
+    }
+    
+    .expanded {
+        fill: rgb(129, 255, 129) !important;
+        stroke: black !important;
+    }
+    
+    .not-expanded {
+        fill: rgb(255, 126, 126) !important;
+        stroke: black !important;
+    }
+}
+  
+body.vscode-dark {
+    text {
+        fill: black !important;
+    }
+    background-color: var(--vscode-editor-background);
+    .root-table {
+        fill: rgb(142, 240, 255) !important;
+        stroke: blue !important;
+    }
+    
+    .expanded {
+        fill: rgb(129, 255, 129) !important;
+        stroke: green !important;
+    }
+    
+    .not-expanded {
+        fill: rgb(255, 126, 126) !important;
+        stroke: red !important;
+    }
+}
+  
+body.vscode-high-contrast {
+    text {
+        fill: rgb(255, 255, 255) !important;
+    }
+    background-color: var(--vscode-editor-background);
+    .root-table {
+        fill: rgb(0, 0, 0) !important;
+        stroke: yellow !important;
+    }
+    
+    .expanded {
+        fill: rgb(0, 0, 0) !important;
+        stroke: rgb(54, 255, 54) !important;
+    }
+    
+    .not-expanded {
+        fill: rgb(0, 0, 0) !important;
+        stroke: red !important;
+    }
 }
