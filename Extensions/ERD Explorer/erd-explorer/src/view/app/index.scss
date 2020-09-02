@@ -23,7 +23,7 @@
 }
 
 path {
-    stroke-width: 1.5px
+    stroke-width: 1.5px;
 }
 
 body.vscode-light {
@@ -52,6 +52,10 @@ body.vscode-light {
 
     .dropdown-menu > li:hover {
         background-color: var(--vscode-list-hoverBackground);
+    }
+
+    path {
+        stroke: black;
     }
 }
   
@@ -87,6 +91,10 @@ body.vscode-dark {
 
     .dropdown-menu > li:hover {
         background-color: var(--vscode-list-hoverBackground);
+    }
+
+    path {
+        stroke: white;
     }
 }
   
@@ -128,5 +136,9 @@ body.vscode-high-contrast {
         outline-color: orange !important;
         outline: 1px;
         outline-style: dashed;
+    }
+
+    path {
+        stroke: white;
     }
 }

@@ -43,6 +43,9 @@ export default class ViewLoader {
                     case 'log':
                         console.log(message.message);
                         return;
+                    case 'explore':
+                        console.log("Explore table: " + message.tableName);
+                        return;
                 }
             },
             undefined,

@@ -13,21 +13,15 @@ declare global {
 }
 const vscode = window.acquireVsCodeApi();
 
-let model: ErdModel;
-let erd: string = "";
-//let options: { [name: string]: string[] };
-//let fullDiagramRelationships = undefined;
-//let expandedRelationships: { [relationshipId: string]: any }
-//let expandedTables = {};
-//let visibleTables = {};
-let tableList = {};
+let model: ErdModel; // ErdModel received from pg-db-utils
+let erd: string = ""; // Current rendered erd
 
-let relationships: Set<string> = new Set();
-let activeRelationships: Set<string> = new Set();
-let tables: Set<string> = new Set();
-let activeTables: { [tableName: string]: boolean } = {}; // true = expanded, false = not expanded
-let tableRelationships: { [tableName: string]: string[] } = {};
-let rootTable = "";
+let relationships: Set<string> = new Set(); // Set of all relationships
+let activeRelationships: Set<string> = new Set(); // Set of rendered relationships
+let tables: Set<string> = new Set(); // Set of all tables
+let activeTables: { [tableName: string]: boolean } = {}; // Dictionary of rendered tables, true = expanded, false = not expanded
+let tableRelationships: { [tableName: string]: string[] } = {}; // Map for each table identifying their relationships
+let rootTable = ""; // Root table is defined when selecting an expansion root. It prevents collapsing root nodes
 
 $(document).ready(function () {
   mermaid.contentLoaded();
@@ -36,6 +30,7 @@ $(document).ready(function () {
   })
 });
 
+// Set colour theme because paths css is not responding reliably
 let theme = "default";
 if (!$('body').hasClass("vscode-light")) {
   theme = "dark"
@@ -46,6 +41,7 @@ mermaid.initialize({
   theme: theme
 });
 
+// Get an updated version of the model
 function updateModel(new_model: ErdModel, target: string) {
   model = new_model;
 
@@ -56,7 +52,18 @@ function updateModel(new_model: ErdModel, target: string) {
   refresh();
 }
 
+// Parse ErdModel to populate maps and sets correctly
+// Also populate ol element for root selection
 function parseModel() {
+  relationships = new Set();
+  activeRelationships = new Set(); 
+  tables = new Set(); 
+  activeTables = {}; 
+  tableRelationships = {}; 
+  rootTable = ""; 
+  $('ol').html("");
+
+  // Record every table and relationship
   for (let key in model.dbStructure.relationships.items) {
     let relationship = model.dbStructure.relationships.items[key];
 
@@ -84,15 +91,31 @@ function parseModel() {
     tableRelationships[endNodeName].push(relationshipString);
   }
 
+  // Populate roots list
   $('ol').append("<li class=\"erd-dropdown\" id='full'>Full Diagram</li>");
+  let list: string[] = [];
   for (let key in model.dbStructure.tables.items) {
     let nodeName = getNodeName(key)
-    $('ol').append("<li class=\"erd-dropdown\" id='" + nodeName + "'>" + nodeName + "</li>");
-    tableList[nodeName] = nodeName;
+    list.push("<li class=\"erd-dropdown\" id='" + nodeName + "'>" + nodeName + "</li>");
   }
+
+  list = list.sort();
+
+  let currentSchema = "";
+  list.forEach(item => {
+    if (currentSchema == "" || item.split(" ")[2].indexOf(currentSchema + "-") == -1) {
+      currentSchema = item.split(" ")[2].substring(4, item.split(" ")[2].indexOf("-"));
+      log(currentSchema)
+      $('ol').append("<hr>");
+    }
+    $('ol').append(item);
+  });
+
+  // Add click listeners to root list
   $('li').click(click);
 }
 
+// Load erd from a specific root, 'full' = full diagram
 function load(target: string) {
   erd = "";
   if (target == "full") {
@@ -104,29 +127,18 @@ function load(target: string) {
     })
     rootTable = "";
   } else {
+    // Reset active table/relationship list
     activeTables = {};
     activeRelationships = new Set();
 
     rootTable = target;
     activeTables[rootTable] = false;
-    expand(rootTable);
-    /*
-    activeTables[target] = true;
-    tableRelationships[target].forEach(relationship => {
-      let rSplit = relationship.split(" ");
-      let t1 = rSplit[0];
-      let t2 = rSplit[2];
-      if (activeTables[t1] == undefined) {
-        activeTables[t1] = false;
-      }
-      if (activeTables[t2] == undefined) {
-        activeTables[t2] = false;
-      }
-      activeRelationships.add(relationship);
-    });*/
+    expand(rootTable); //Expand root node
   }
 }
 
+// Refresh Erd by re initializing mermaid
+// If root table is not set then expand all nodes
 var refresh = function () {
   if (rootTable != "") {
     erd = "erDiagram"
@@ -136,10 +148,14 @@ var refresh = function () {
   }
   $('.mermaid').html(erd.replace(/\./g, "-")).removeAttr('data-processed');
   mermaid.init(undefined, $(".mermaid"));
+
+  // Add click listeners to table elements
   $("g").click(function (e) {
-    expand(e.currentTarget.id);
+    tableClick(e);
   });
   
+  // Add css classes to table nodes based on their level of expansion
+  // If rootTable is not set then every table is a root table
   tables.forEach(table => {
     if (table == rootTable || rootTable == "") {
       let elementSelector = "g#" + table;
@@ -154,6 +170,7 @@ var refresh = function () {
   });
 }
 
+// Click event fired from root list to load a new root
 function click(element) {
   let id = element.target.id;
   if (id) {
@@ -162,69 +179,82 @@ function click(element) {
   }
 }
 
-function expand(id) {
-  if (id) {
-    if (activeTables[id] == false) {
-      activeTables[id] = true;
-
-      let checkRelationships = new Set<string>();
-      tableRelationships[id].forEach(relationship => {
-        let rSplit = relationship.split(" ");
-        let t1 = rSplit[0];
-        let t2 = rSplit[2];
-        if (activeTables[t1] == undefined) {
-          activeTables[t1] = false;
-          checkRelationships.add(t1);
-        }
-        if (activeTables[t2] == undefined) {
-          activeTables[t2] = false;
-          checkRelationships.add(t2);
-        }
-        activeRelationships.add(relationship);
-      });
-      tables.forEach(table => {
-        if (activeTables[table] != undefined) {
-          let isExpanded = true;
-          tableRelationships[table].forEach(relationship => {
-            let rSplit = relationship.split(" ");
-            let t1 = rSplit[0];
-            let t2 = rSplit[2];
-            if (activeTables[t1] != undefined && activeTables[t2] != undefined) {
-              activeRelationships.add(relationship);
-            } else {
-              isExpanded = false;
-            }
-          });
-          if (isExpanded) {
-            activeTables[table] = true;
-          }
-        }
-      });
-    } else {
-      collapse(id);
+// Click event fired from a table element to either expand/collapse or explore the table occurrences
+function tableClick(e) {
+  // If ctl+click or cmd+click explore sql for table references
+  if (e.ctrlKey || e.metaKey) {
+    vscode.postMessage({
+      command: 'explore',
+      tableName: e.currentTarget.id
+    });
+  } else { // expand/collapse clicked table
+    let id = e.currentTarget.id;
+    if (id) {
+      // If table is active and not expanded then expand, otherwise collapse
+      if (activeTables[id] == false) {
+        expand(id);
+      } else {
+        collapse(id);
+      }
+      refresh();
     }
-    refresh();
   }
 }
 
-function collapse(id) {
-  if (id && (id == rootTable || rootTable == "")) {
-    log("Cannot Collapse Root Node");
-    return;
-  }
+// Expands a table and adds all relationships and adjacent tables to the active sets
+function expand(id) {
+  activeTables[id] = true;
 
-  activeTables[id] = false;
-  let checkRelationships = new Set<string>();
+  // Add each relationship to the active set
   tableRelationships[id].forEach(relationship => {
     let rSplit = relationship.split(" ");
     let t1 = rSplit[0];
     let t2 = rSplit[2];
-    let other = (id == t1)? t2: t1;
+    if (activeTables[t1] == undefined) {
+      activeTables[t1] = false;
+    }
+    if (activeTables[t2] == undefined) {
+      activeTables[t2] = false;
+    }
+    activeRelationships.add(relationship);
+  });
 
-    if (activeTables[other] == false) {
-      checkRelationships.add(other);
+  // check every table for adjacency
+  // If a table is adjacent then ensure it is in the active set
+  // If the table has no other relationships then set the node as expanded
+  tables.forEach(table => {
+    if (activeTables[table] != undefined) {
+      let isExpanded = true;
+      tableRelationships[table].forEach(relationship => {
+        let rSplit = relationship.split(" ");
+        let t1 = rSplit[0];
+        let t2 = rSplit[2];
+        if (activeTables[t1] != undefined && activeTables[t2] != undefined) {
+          activeRelationships.add(relationship);
+        } else {
+          isExpanded = false;
+        }
+      });
+      if (isExpanded) {
+        activeTables[table] = true;
+      }
     }
   });
+}
+
+// Collapses a table element if it not a rootTable
+function collapse(id) {
+  if (id == rootTable || rootTable == "") {
+    log("Cannot Collapse A Root Node");
+    return;
+  }
+
+  // Collapse table
+  // Check every table to ensure they are not orphaned
+  // A table is orphaned when itself and every adjacent table to it is not expanded
+  // Orphaned tables must be removed from the erd
+  // If config erd-retain-orphan-tables is true then orphans should remain but appear gray TODO: Add this config option
+  activeTables[id] = false;
   tables.forEach(table => {
     if (activeTables[table] == false) {
       let orphanTable = true;
@@ -250,6 +280,7 @@ function collapse(id) {
   });
 }
 
+// Helper function to ensure all table names are standard
 function getNodeName(tableId) {
   let table = model.dbStructure.tables.items[tableId];
   let schema = model.dbStructure.schemas.items[table.schema];
@@ -267,6 +298,7 @@ window.addEventListener('message', event => {
   }
 });
 
+// Output errors to the ViewLoader for easy handling
 window.onerror = function (message, source, lineno, colno, error) {
   vscode.postMessage({
     command: 'error',
@@ -280,6 +312,7 @@ window.onerror = function (message, source, lineno, colno, error) {
   });
 }
 
+// Log messages to ViewLoader for easy handling
 export function log(message) {
   vscode.postMessage({
     command: 'log',
