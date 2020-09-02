@@ -1,64 +1,132 @@
 @import "~bootstrap/scss/bootstrap";
 
+.erd-dropdown {
+    font-size: 18px !important;
+}
+
+.dropdown-menu {
+     li{
+        margin: 5px;
+        padding: 5px;
+        background-color: var(--vscode-editor-background);
+    }
+
+    background-color: var(--vscode-editor-background) !important;
+}
+
+.btn {
+    background-color: var(--vscode-button-background) !important;
+    color: var(--vscode-button-foreground)
+}
+.btn:hover {
+    background-color: var(vscode-button-hover-background);
+}
+
+path {
+    stroke-width: 1.5px
+}
+
 body.vscode-light {
     text {
         fill: black !important;
+        font-size: 18px !important;
     }
     background-color: var(--vscode-editor-background);
     .root-table {
         fill: rgb(142, 240, 255) !important;
         stroke: black !important;
+        stroke-width: 2px;
     }
     
     .expanded {
         fill: rgb(129, 255, 129) !important;
         stroke: black !important;
+        stroke-width: 2px;
     }
     
     .not-expanded {
         fill: rgb(255, 126, 126) !important;
         stroke: black !important;
+        stroke-width: 2px;
+    }
+
+    .dropdown-menu > li:hover {
+        background-color: var(--vscode-list-hoverBackground);
     }
 }
   
 body.vscode-dark {
     text {
         fill: black !important;
+        font-size: 18px !important;
     }
     background-color: var(--vscode-editor-background);
     .root-table {
         fill: rgb(142, 240, 255) !important;
         stroke: blue !important;
+        stroke-width: 2px;
     }
     
     .expanded {
         fill: rgb(129, 255, 129) !important;
         stroke: green !important;
+        stroke-width: 2px;
     }
     
     .not-expanded {
         fill: rgb(255, 126, 126) !important;
         stroke: red !important;
+        stroke-width: 2px;
+    }
+
+    .dropdown-menu {
+        li {
+            color: white;
+        }
+    }
+
+    .dropdown-menu > li:hover {
+        background-color: var(--vscode-list-hoverBackground);
     }
 }
   
 body.vscode-high-contrast {
     text {
         fill: rgb(255, 255, 255) !important;
+        font-size: 18px !important;
     }
     background-color: var(--vscode-editor-background);
     .root-table {
         fill: rgb(0, 0, 0) !important;
-        stroke: yellow !important;
+        stroke: orange !important;
+        stroke-width: 2px;
     }
     
     .expanded {
         fill: rgb(0, 0, 0) !important;
         stroke: rgb(54, 255, 54) !important;
+        stroke-width: 2px;
     }
     
     .not-expanded {
         fill: rgb(0, 0, 0) !important;
         stroke: red !important;
+        stroke-width: 2px;
+    }
+
+    .dropdown-menu {
+        li {
+            color: white;
+        }
+
+        outline-style: solid !important;
+        outline-color: rgb(142, 240, 255) !important;
+        outline-width: 1px !important;
+    }
+    
+    .dropdown-menu > li:hover {
+        outline-color: orange !important;
+        outline: 1px;
+        outline-style: dashed;
     }
 }

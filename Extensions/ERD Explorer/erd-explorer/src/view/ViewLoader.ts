@@ -71,7 +71,7 @@ export default class ViewLoader {
                     <body>
                         <div>
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Roots</button>
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><span class="erd-dropdown">Roots</span></button>
                                 <ol #roots class="dropdown-menu">
                                 </ol>
                             </div>

@@ -84,10 +84,10 @@ function parseModel() {
     tableRelationships[endNodeName].push(relationshipString);
   }
 
-  $('ol').append("<li id='full'>Full Diagram</li>");
+  $('ol').append("<li class=\"erd-dropdown\" id='full'>Full Diagram</li>");
   for (let key in model.dbStructure.tables.items) {
     let nodeName = getNodeName(key)
-    $('ol').append("<li id='" + nodeName + "'>" + nodeName + "</li>");
+    $('ol').append("<li class=\"erd-dropdown\" id='" + nodeName + "'>" + nodeName + "</li>");
     tableList[nodeName] = nodeName;
   }
   $('li').click(click);
