@@ -34,7 +34,8 @@ export default class ViewLoader {
                         this._panel?.webview.postMessage({
                             command: 'loadERD',
                             model: treeNode.getSchema(),
-                            target: (treeNode.isTable)? treeNode.parent.name + "-" + treeNode.name: 'full'
+                            target: (treeNode.isTable)? treeNode.parent.name + "-" + treeNode.name: 'full',
+                            persistDiagram: (process.env.PERSIST_ER_DIAGRAM == 'true')? true: false
                         });
                         return;
                     case 'error':

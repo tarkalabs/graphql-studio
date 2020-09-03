@@ -13,6 +13,8 @@ declare global {
 }
 const vscode = window.acquireVsCodeApi();
 
+let PERSIST_DIAGRAM = false; // When true the full diagram remains visible.
+
 let model: ErdModel; // ErdModel received from pg-db-utils
 let erd: string = ""; // Current rendered erd
 
@@ -42,8 +44,9 @@ mermaid.initialize({
 });
 
 // Get an updated version of the model
-function updateModel(new_model: ErdModel, target: string) {
+function updateModel(new_model: ErdModel, target: string, persistDiagram: boolean) {
   model = new_model;
+  PERSIST_DIAGRAM = persistDiagram;
 
   parseModel();
 
@@ -141,10 +144,14 @@ function load(target: string) {
 // If root table is not set then expand all nodes
 var refresh = function () {
   if (rootTable != "") {
-    erd = "erDiagram"
-    activeRelationships.forEach(relationship => {
-      erd += "\n\t" + relationship;
-    });
+    if (PERSIST_DIAGRAM) {
+      erd = MermaidModel.getERD(model);
+    } else {
+      erd = "erDiagram"
+      activeRelationships.forEach(relationship => {
+        erd += "\n\t" + relationship;
+      });
+    }
   }
   $('.mermaid').html(erd.replace(/\./g, "-")).removeAttr('data-processed');
   mermaid.init(undefined, $(".mermaid"));
@@ -160,12 +167,15 @@ var refresh = function () {
     if (table == rootTable || rootTable == "") {
       let elementSelector = "g#" + table;
       $(elementSelector).children(":first-child").addClass('root-table');
-    } else if (!activeTables[table]) {
+    } else if (activeTables[table] == false) {
       let elementSelector = "g#" + table;
       $(elementSelector).children(":first-child").addClass('not-expanded');
-    } else {
+    } else if(activeTables[table] == true) {
       let elementSelector = "g#" + table;
       $(elementSelector).children(":first-child").addClass('expanded');
+    } else {
+      let elementSelector = "g#" + table;
+      $(elementSelector).children(":first-child").addClass('orphan');
     }
   });
 }
@@ -293,7 +303,7 @@ window.addEventListener('message', event => {
 
   switch (message.command) {
     case 'loadERD':
-      updateModel(message.model, message.target);
+      updateModel(message.model, message.target, message.persistDiagram);
       break;
   }
 });

@@ -82,6 +82,12 @@ body.vscode-dark {
         stroke: red !important;
         stroke-width: 2px;
     }
+    
+    .orphan {
+        fill: rgb(58, 58, 58) !important;
+        stroke: rgb(44, 44, 44) !important;
+        stroke-width: 2px;
+    }
 
     .dropdown-menu {
         li {
