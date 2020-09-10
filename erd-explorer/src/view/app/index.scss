@@ -49,6 +49,13 @@ body.vscode-light {
         stroke: black !important;
         stroke-width: 2px;
     }
+    
+    .orphan {
+        fill: var(--vscode-sideBar-background) !important;
+        stroke: gray !important;
+        stroke-width: 2px;
+        color: gray;
+    }
 
     .dropdown-menu > li:hover {
         background-color: var(--vscode-list-hoverBackground);
@@ -56,6 +63,11 @@ body.vscode-light {
 
     path {
         stroke: black;
+    }
+
+    .orphan + text {
+        fill: gray !important;
+        font-size: 18px !important;
     }
 }
   
@@ -84,7 +96,7 @@ body.vscode-dark {
     }
     
     .orphan {
-        fill: rgb(58, 58, 58) !important;
+        fill: var(--vscode-sideBar-background) !important;
         stroke: rgb(44, 44, 44) !important;
         stroke-width: 2px;
     }
@@ -101,6 +113,11 @@ body.vscode-dark {
 
     path {
         stroke: white;
+    }
+
+    .orphan + text {
+        fill: gray !important;
+        font-size: 18px !important;
     }
 }
   
@@ -123,8 +140,14 @@ body.vscode-high-contrast {
     }
     
     .not-expanded {
-        fill: rgb(0, 0, 0) !important;
+        fill: black;
         stroke: red !important;
+        stroke-width: 2px;
+    }
+    
+    .orphan {
+        fill: rgb(0, 0, 0) !important;
+        stroke: gray !important;
         stroke-width: 2px;
     }
 

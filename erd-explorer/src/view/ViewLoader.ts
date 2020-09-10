@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { INode } from "src/interfaces/INode";
+import { Uri } from "vscode";
 
 export default class ViewLoader {
     private readonly _panel: vscode.WebviewPanel | undefined;
@@ -45,6 +46,8 @@ export default class ViewLoader {
                         console.log(message.message);
                         return;
                     case 'explore':
+                        const editor = vscode.window.activeTextEditor;
+                        vscode.commands.executeCommand("editor.action.showReferences", editor.document.uri.fsPath, editor.selection.active, []);
                         console.log("Explore table: " + message.tableName);
                         return;
                 }

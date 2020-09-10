@@ -3,14 +3,6 @@
 		{
 			"name": "Workspace",
 			"path": "./"
-		},
-		{
-			"name": "Project Source",
-			"path": "example-project"
-		},
-		{
-			"name": "Extension Source",
-			"path": "Extensions"
 		}
 	],
 	"settings": {
