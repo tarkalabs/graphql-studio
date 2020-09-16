@@ -1,0 +1,32 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+        "moduleResolution": "node",
+		"target": "es6",
+		"outDir": "out",
+		"lib": [
+			"es6",
+			"dom"
+		],
+		"sourceMap": true,
+		"rootDir": "src",
+		"strictNullChecks": false,
+		"strict": true,
+        "jsx": "react",
+		"types": [ "node" ],
+		"typeRoots": [ "../node_modules/@types", "../types" ],
+		"paths": {
+			"mermaid": ["types/mermaid"]
+		},
+		"baseUrl":""
+	},
+	"exclude": [
+		"node_modules",
+		".vscode-test",
+		"**/view/app/index.css",
+		"**/view/app/index.tsx",
+		"**/view/app/tsconfig.json",
+		"**/view/app/config.tsx",
+		"types"
+	]
+}
