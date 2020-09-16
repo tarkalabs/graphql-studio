@@ -2,7 +2,6 @@
 
 `Erd Explorer` is the simplest way to debug massive postgresql databases.
 
-[//]: ![DEMO-1.gif](resources/gifs/DEMO-1.gif)
 Designed for use in Visual Studio Code
 
 ### Usage
