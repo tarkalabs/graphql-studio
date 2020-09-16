@@ -1,4 +1,4 @@
-# <img src="resources/postgres-explorer.svg" width="48" style="position: absolute"><div style="padding:1px 0px 0px 60px">ERD Explorer<div/> 
+# <div style="padding:1px 0px 0px 60px">ERD Explorer<div/> 
 
 `Erd Explorer` is the simplest way to debug massive postgresql databases.
 
