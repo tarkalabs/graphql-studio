@@ -1,3 +1,6 @@
+# ADDITIONAL INGORE EXPRESSIONS
+erdViewer/
+
 
 # Created by https://www.gitignore.io/api/go,vim,node,linux,macos,windows,intellij,visualstudio,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=go,vim,node,linux,macos,windows,intellij,visualstudio,visualstudiocode

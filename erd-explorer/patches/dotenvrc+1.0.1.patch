@@ -1,0 +1,20 @@
+diff --git a/node_modules/dotenvrc/dotenv.d.ts b/node_modules/dotenvrc/dotenv.d.ts
+index 999911a..68b8888 100644
+--- a/node_modules/dotenvrc/dotenv.d.ts
++++ b/node_modules/dotenvrc/dotenv.d.ts
+@@ -1,4 +1,5 @@
+ /// <reference types="node" />
+ import ProcessEnv = NodeJS.ProcessEnv;
++interface EnvConfig {}
+ export declare function parse(config?: EnvConfig): ProcessEnv;
+ export declare function inject(config?: EnvConfig): void;
+diff --git a/node_modules/dotenvrc/envrc.d.ts b/node_modules/dotenvrc/envrc.d.ts
+index 999911a..68b8888 100644
+--- a/node_modules/dotenvrc/envrc.d.ts
++++ b/node_modules/dotenvrc/envrc.d.ts
+@@ -1,4 +1,5 @@
+ /// <reference types="node" />
+ import ProcessEnv = NodeJS.ProcessEnv;
++interface EnvConfig {}
+ export declare function parse(config?: EnvConfig): ProcessEnv;
+ export declare function inject(config?: EnvConfig): void;

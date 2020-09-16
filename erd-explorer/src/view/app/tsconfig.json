@@ -15,7 +15,8 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "experimentalDecorators": true,
-		"typeRoots": [ "../node_modules/@types" ]
+        "typeRoots": [ "../node_modules/@types" ],
+        "baseUrl": ""
     },
     "exclude": [
         "node_modules"

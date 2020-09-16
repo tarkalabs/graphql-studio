@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
+        "moduleResolution": "node",
 		"target": "es6",
 		"outDir": "out",
 		"lib": [
@@ -15,8 +16,7 @@
 		"types": [ "node" ],
 		"typeRoots": [ "../node_modules/@types", "../types" ],
 		"paths": {
-			"mermaid": ["types/mermaid"],
-			"dotenvrc": ["types/dotenvrc"]
+			"mermaid": ["types/mermaid"]
 		},
 		"baseUrl":""
 	},
