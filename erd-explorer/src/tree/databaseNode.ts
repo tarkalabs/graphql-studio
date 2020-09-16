@@ -35,10 +35,10 @@ export class DatabaseNode implements INode {
     return {
       label: this.connection.database,
       collapsibleState: TreeItemCollapsibleState.Collapsed,
-      contextValue: 'vscode-postgres.tree.database',
+      contextValue: 'erd-explorer.tree.database',
       command: {
         title: 'select-database',
-        command: 'vscode-postgres.setActiveConnection',
+        command: 'erd-explorer.setActiveConnection',
         arguments: [ this.connection ]
       },
       iconPath: {

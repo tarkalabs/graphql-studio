@@ -15,7 +15,7 @@ export class FunctionFolderNode implements INode {
     return {
       label: "Functions",
       collapsibleState: TreeItemCollapsibleState.Collapsed,
-      contextValue: 'vscode-postgres.tree.function-folder',
+      contextValue: 'erd-explorer.tree.function-folder',
       iconPath: {
         light: path.join(__dirname, `../../resources/light/func-folder.svg`),
         dark: path.join(__dirname, `../../resources/dark/func-folder.svg`)

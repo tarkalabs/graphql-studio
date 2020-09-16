@@ -10,27 +10,27 @@
       "type": "object",
       "title": "PostgreSQL",
       "properties": {
-        "vscode-postgres.defaultConnection": {
+        "erd-explorer.defaultConnection": {
           "type": "string",
           "default": "",
           "description": "The default connection to use"
         },
-        "vscode-postgres.defaultDatabase": {
+        "erd-explorer.defaultDatabase": {
           "type": "string",
           "default": "",
           "description": "The default database on the default connection to use"
         },
-        "vscode-postgres.showExplorer": {
+        "erd-explorer.showExplorer": {
           "type": "boolean",
           "default": true,
           "description": "Show or hide the database explorer."
         },
-        "vscode-postgres.prettyPrintJSONfields": {
+        "erd-explorer.prettyPrintJSONfields": {
           "type": "boolean",
           "default": false,
           "description": "Turns on/off pretty printing of JSON fields"
         },
-        "vscode-postgres.setConnectionFromExplorer": {
+        "erd-explorer.setConnectionFromExplorer": {
           "type": "string",
           "enum": [
             "always",
@@ -40,7 +40,7 @@
           "default": "always",
           "description": "Controls whether selecting a database in explorer changes the current editor's connection"
         },
-        "vscode-postgres.tableColumnSortOrder": {
+        "erd-explorer.tableColumnSortOrder": {
           "type": "string",
           "enum": [
             "db-order",
@@ -50,7 +50,7 @@
           "default": "db-order",
           "description": "Controls the order of the columns in the database explorer. Default is db-order which orders the columns as the were added to the table (how postgres reports them)"
         },
-        "vscode-postgres.intervalFormat": {
+        "erd-explorer.intervalFormat": {
           "type": "string",
           "enum": [
             "iso_8601",
@@ -60,7 +60,7 @@
           "default": "iso_8601",
           "description": "Controls the display format for `interval` columns. Default is the iso_8601 standard which does not cover milliseconds."
         },
-        "vscode-postgres.virtualFolders": {
+        "erd-explorer.virtualFolders": {
           "type": "array",
           "default": [
             "functions"
@@ -79,7 +79,7 @@
         "title": "View ERD"
       },
       {
-        "command": "vscode-postgres.refresh",
+        "command": "erd-explorer.refresh",
         "title": "Refresh Items",
         "category": "PostgreSQL"
       }
@@ -92,47 +92,47 @@
       "view/item/context": [
         {
           "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.schema",
+          "when": "view == postgres && viewItem == erd-explorer.tree.schema",
           "group": "postgres@1"
         },
         {
           "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.database",
+          "when": "view == postgres && viewItem == erd-explorer.tree.database",
           "group": "postgres@1"
         },
         {
           "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.table",
+          "when": "view == postgres && viewItem == erd-explorer.tree.table",
           "group": "postgres@1"
         },
         {
           "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.function-folder",
+          "when": "view == postgres && viewItem == erd-explorer.tree.function-folder",
           "group": "postgres@1"
         },
         {
-          "command": "vscode-postgres.refresh",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.connection",
+          "command": "erd-explorer.refresh",
+          "when": "view == postgres && viewItem == erd-explorer.tree.connection",
           "group": "postgres@1"
         },
         {
-          "command": "vscode-postgres.refresh",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.schema",
+          "command": "erd-explorer.refresh",
+          "when": "view == postgres && viewItem == erd-explorer.tree.schema",
           "group": "postgres@1"
         },
         {
-          "command": "vscode-postgres.refresh",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.database",
+          "command": "erd-explorer.refresh",
+          "when": "view == postgres && viewItem == erd-explorer.tree.database",
           "group": "postgres@1"
         },
         {
-          "command": "vscode-postgres.refresh",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.table",
+          "command": "erd-explorer.refresh",
+          "when": "view == postgres && viewItem == erd-explorer.tree.table",
           "group": "postgres@1"
         },
         {
-          "command": "vscode-postgres.refresh",
-          "when": "view == postgres && viewItem == vscode-postgres.tree.function-folder",
+          "command": "erd-explorer.refresh",
+          "when": "view == postgres && viewItem == erd-explorer.tree.function-folder",
           "group": "postgres@1"
         }
       ]
@@ -151,7 +151,7 @@
         {
           "id": "postgres",
           "name": "PostgreSQL",
-          "when": "config.vscode-postgres.showExplorer == true"
+          "when": "config.erd-explorer.showExplorer == true"
         }
       ]
     }

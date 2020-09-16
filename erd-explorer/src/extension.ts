@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('vscode-postgres.refresh', async (treeNode: INode) => {
+    disposable = vscode.commands.registerCommand('erd-explorer.refresh', async (treeNode: INode) => {
         const tree = PostgreSQLTreeDataProvider.getInstance();
         tree.refresh(treeNode);
 

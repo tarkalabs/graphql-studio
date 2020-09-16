@@ -24,10 +24,10 @@ export class SchemaNode implements INode {
     return {
       label: this.treeSchema.schemaName,
       collapsibleState: TreeItemCollapsibleState.Collapsed,
-      contextValue: 'vscode-postgres.tree.schema',
+      contextValue: 'erd-explorer.tree.schema',
       command: {
         title: 'select-database',
-        command: 'vscode-postgres.setActiveConnection',
+        command: 'erd-explorer.setActiveConnection',
         arguments: [ this.connection ]
       },
       iconPath: {
