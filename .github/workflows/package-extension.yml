@@ -38,10 +38,10 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Current NPM Package Version
-        uses: justincy/npm-version-action@2.1.0
+        uses: pchynoweth/action-get-npm-version@1.0.1
         id: npm-version
         with:
-          path: ${{env.working-directory}}
+          file: ${{env.working-directory}}/package.json
               
       - name: upload vsix as artifact
         uses: actions/upload-artifact@v1
