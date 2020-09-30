@@ -273,6 +273,6 @@
     "prod:pg-db-utils": "npm install --save @tarkalabs/pg-db-utils",
     "package": "vsce package"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "tarkalabs"
 }
