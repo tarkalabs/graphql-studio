@@ -138,6 +138,7 @@ function load(target: string) {
     activeTables[rootTable] = false;
     expand(rootTable); //Expand root node
   }
+  log(erd);
 }
 
 // Refresh Erd by re initializing mermaid

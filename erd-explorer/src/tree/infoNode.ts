@@ -20,7 +20,7 @@ export class InfoNode implements INode {
     return {
       label: this.label.toString(),
       collapsibleState: TreeItemCollapsibleState.None,
-      contextValue: 'erd-explorer.tree.error',
+      contextValue: 'tarkalabs-postgresql.tree.error',
       iconPath: {
         light: path.join(__dirname, '../../resources/light/error.svg'),
         dark: path.join(__dirname, '../../resources/dark/error.svg')

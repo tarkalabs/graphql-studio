@@ -7,7 +7,7 @@ export class Global {
   public static context: vscode.ExtensionContext;
 
   public static get Configuration(): vscode.WorkspaceConfiguration {
-    return vscode.workspace.getConfiguration("erd-explorer");
+    return vscode.workspace.getConfiguration("tarkalabs-postgresql");
   }
 }
 

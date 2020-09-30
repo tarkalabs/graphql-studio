@@ -83,8 +83,7 @@ export default class ViewLoader {
                                 </ol>
                             </div>
                             <div class="mermaid" id="mermaid">
-                                erDiagram
-                                A ||..|| B : "ASD"
+                                Loading...
                             </div>
                         </div>
                         <script crossorigin src="${reactAppUri}"></script>

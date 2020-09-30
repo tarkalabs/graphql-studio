@@ -28,7 +28,7 @@ export class TableNode implements INode {
     return {
       label: this.table.tableName,
       collapsibleState: TreeItemCollapsibleState.Collapsed,
-      contextValue: 'erd-explorer.tree.table',
+      contextValue: 'tarkalabs-postgresql.tree.table',
       iconPath: {
         light: path.join(__dirname, `../../resources/light/${this.table.is_table ? 'table' : 'view'}.svg`),
         dark: path.join(__dirname, `../../resources/dark/${this.table.is_table ? 'table' : 'view'}.svg`)

@@ -3,6 +3,8 @@ import { INode } from '../interfaces/INode';
 import { ConnectionNode } from './connectionNode';
 import { IConnection, Connection } from '@tarkalabs/pg-db-utils';
 import { InfoNode } from './infoNode';
+import { Constants } from '../common/constants';
+import { Global } from '../common/global';
 var parse = require('pg-connection-string').parse;
 
 export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode> {
@@ -16,7 +18,7 @@ export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode
   public static getInstance(context?: vscode.ExtensionContext): PostgreSQLTreeDataProvider {
     if (context && !this._instance) {
       this._instance = new PostgreSQLTreeDataProvider(context);
-      context.subscriptions.push(vscode.window.registerTreeDataProvider("postgres", this._instance));
+      context.subscriptions.push(vscode.window.registerTreeDataProvider("tarkalabs-postgres", this._instance));
     }
     return this._instance;
   }
@@ -54,11 +56,31 @@ export class PostgreSQLTreeDataProvider implements vscode.TreeDataProvider<INode
     }
 
     let connection: Connection = new Connection(conn);
-    if (!await connection.testConnection()) {
-      ConnectionNodes.push(new InfoNode("Failed To Connect To Database", null));
-    } else {
-      ConnectionNodes.push(new ConnectionNode("1", connection, conn));
+    if (!(conn.host === '' || conn.user === '' || conn.port === NaN || conn.database === '')) {
+      if (!await connection.testConnection()) {
+        ConnectionNodes.push(new InfoNode("Failed To Connect To env:" + conn.label + ":" + conn.database, null));
+      } else {
+        conn.label = "(env) " + conn.label;
+        ConnectionNodes.push(new ConnectionNode("default", connection, conn));
+      }
     }
+    
+    const connections = this.context.globalState.get<{[key: string]: IConnection}>(Constants.GlobalStateKey);
+    if (connections) {
+      for (const id of Object.keys(connections)) {
+        conn = Object.assign({}, connections[id]);
+        if (conn.hasPassword || !connection.hasOwnProperty('hasPassword')) {
+          conn.password = await Global.keytar.getPassword(Constants.ExtensionId, id);
+        }
+        connection = new Connection(conn);
+        if (!await connection.testConnection()) {
+          ConnectionNodes.push(new InfoNode("Failed To Connect To " + conn.label + ":" + conn.database, null));
+        } else {
+          ConnectionNodes.push(new ConnectionNode(id, connection, conn));
+        }
+      }
+    }
+
 
     return ConnectionNodes;
   }

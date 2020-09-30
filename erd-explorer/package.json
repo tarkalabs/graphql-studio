@@ -10,27 +10,27 @@
       "type": "object",
       "title": "PostgreSQL",
       "properties": {
-        "erd-explorer.defaultConnection": {
+        "tarkalabs-postgresql.defaultConnection": {
           "type": "string",
           "default": "",
           "description": "The default connection to use"
         },
-        "erd-explorer.defaultDatabase": {
+        "tarkalabs-postgresql.defaultDatabase": {
           "type": "string",
           "default": "",
           "description": "The default database on the default connection to use"
         },
-        "erd-explorer.showExplorer": {
+        "tarkalabs-postgresql.showExplorer": {
           "type": "boolean",
           "default": true,
           "description": "Show or hide the database explorer."
         },
-        "erd-explorer.prettyPrintJSONfields": {
+        "tarkalabs-postgresql.prettyPrintJSONfields": {
           "type": "boolean",
           "default": false,
           "description": "Turns on/off pretty printing of JSON fields"
         },
-        "erd-explorer.setConnectionFromExplorer": {
+        "tarkalabs-postgresql.setConnectionFromExplorer": {
           "type": "string",
           "enum": [
             "always",
@@ -40,7 +40,7 @@
           "default": "always",
           "description": "Controls whether selecting a database in explorer changes the current editor's connection"
         },
-        "erd-explorer.tableColumnSortOrder": {
+        "tarkalabs-postgresql.tableColumnSortOrder": {
           "type": "string",
           "enum": [
             "db-order",
@@ -50,7 +50,7 @@
           "default": "db-order",
           "description": "Controls the order of the columns in the database explorer. Default is db-order which orders the columns as the were added to the table (how postgres reports them)"
         },
-        "erd-explorer.intervalFormat": {
+        "tarkalabs-postgresql.intervalFormat": {
           "type": "string",
           "enum": [
             "iso_8601",
@@ -60,7 +60,7 @@
           "default": "iso_8601",
           "description": "Controls the display format for `interval` columns. Default is the iso_8601 standard which does not cover milliseconds."
         },
-        "erd-explorer.virtualFolders": {
+        "tarkalabs-postgresql.virtualFolders": {
           "type": "array",
           "default": [
             "functions"
@@ -71,93 +71,144 @@
     },
     "commands": [
       {
-        "command": "erd-explorer.generateERD",
+        "command": "tarkalabs-postgresql.addConnection",
+        "title": "Add Connection",
+        "icon": {
+          "light": "resources/light/add.svg",
+          "dark": "resources/dark/add.svg"
+        },
+        "category": "PostgreSQLExplorer"
+      },
+      {
+        "command": "tarkalabs-postgresql.deleteConnection",
+        "title": "Delete Connection",
+        "category": "PostgreSQLExplorer"
+      },
+      {
+        "command": "tarkalabs-postgresql.selectConnection",
+        "title": "Select Connection",
+        "category": "PostgreSQLExplorer"
+      },
+      {
+        "command": "tarkalabs-postgresql.renameConnection",
+        "title": "Rename Connection",
+        "category": "PostgreSQLExplorer"
+      },
+      {
+        "command": "tarkalabs-postgresql.editConnection",
+        "title": "Edit Connection",
+        "category": "PostgreSQLExplorer"
+      },
+      {
+        "command": "tarkalabs-postgresql.generateERD",
         "title": "Generate ERD"
       },
       {
-        "command": "erd-explorer.viewERD",
+        "command": "tarkalabs-postgresql.viewERD",
         "title": "View ERD"
       },
       {
-        "command": "erd-explorer.refresh",
+        "command": "tarkalabs-postgresql.refresh",
         "title": "Refresh Items",
-        "category": "PostgreSQL"
+        "category": "PostgreSQLExplorer"
       }
     ],
     "menus": {
       "editor/title": [],
-      "view/title": [],
+      "view/title": [
+        {
+          "command": "tarkalabs-postgresql.addConnection",
+          "when": "view == tarkalabs-postgres",
+          "group": "navigation@1"
+        }
+      ],
       "commandPalette": [],
       "editor/context": [],
       "view/item/context": [
         {
-          "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == erd-explorer.tree.schema",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.editConnection",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.connection",
+          "group": "tarkalabs-postgres@2"
         },
         {
-          "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == erd-explorer.tree.database",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.deleteConnection",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.connection",
+          "group": "tarkalabs-postgres@2"
         },
         {
-          "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == erd-explorer.tree.table",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.renameConnection",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.connection",
+          "group": "tarkalabs-postgres@2"
         },
         {
-          "command": "erd-explorer.viewERD",
-          "when": "view == postgres && viewItem == erd-explorer.tree.function-folder",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.viewERD",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.schema",
+          "group": "tarkalabs-postgres@1"
         },
         {
-          "command": "erd-explorer.refresh",
-          "when": "view == postgres && viewItem == erd-explorer.tree.connection",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.viewERD",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.database",
+          "group": "tarkalabs-postgres@1"
         },
         {
-          "command": "erd-explorer.refresh",
-          "when": "view == postgres && viewItem == erd-explorer.tree.schema",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.viewERD",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.table",
+          "group": "tarkalabs-postgres@1"
         },
         {
-          "command": "erd-explorer.refresh",
-          "when": "view == postgres && viewItem == erd-explorer.tree.database",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.viewERD",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.function-folder",
+          "group": "tarkalabs-postgres@1"
         },
         {
-          "command": "erd-explorer.refresh",
-          "when": "view == postgres && viewItem == erd-explorer.tree.table",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.refresh",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.connection",
+          "group": "tarkalabs-postgres@1"
         },
         {
-          "command": "erd-explorer.refresh",
-          "when": "view == postgres && viewItem == erd-explorer.tree.function-folder",
-          "group": "postgres@1"
+          "command": "tarkalabs-postgresql.refresh",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.schema",
+          "group": "tarkalabs-postgres@1"
+        },
+        {
+          "command": "tarkalabs-postgresql.refresh",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.database",
+          "group": "tarkalabs-postgres@1"
+        },
+        {
+          "command": "tarkalabs-postgresql.refresh",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.table",
+          "group": "tarkalabs-postgres@1"
+        },
+        {
+          "command": "tarkalabs-postgresql.refresh",
+          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.function-folder",
+          "group": "tarkalabs-postgres@1"
         }
       ]
     },
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "postgres-explorer",
+          "id": "tarkalabs-postgres-view",
           "title": "PostgreSQL Explorer",
-          "icon": "resources/postgres-explorer.svg"
+          "icon": "resources/tarkalabs-postgres.svg"
         }
       ]
     },
     "views": {
-      "postgres-explorer": [
+      "tarkalabs-postgres-view": [
         {
-          "id": "postgres",
+          "id": "tarkalabs-postgres",
           "name": "PostgreSQL",
-          "when": "config.erd-explorer.showExplorer == true"
+          "when": "config.tarkalabs-postgresql.showExplorer == true"
         }
       ]
     }
   },
   "dependencies": {
-    "@tarkalabs/pg-db-utils": "^1.1.1",
+    "@tarkalabs/pg-db-utils": "^1.1.4",
+    "@types/uuid": "^8.3.0",
     "bootstrap": "^4.5.0",
     "dotenv": "^8.2.0",
     "dotenvrc": "^1.0.1",
@@ -165,7 +216,8 @@
     "keytar": "^6.0.1",
     "mermaid": "^8.5.2",
     "pg-connection-string": "^2.3.0",
-    "popper.js": "^1.16.1"
+    "popper.js": "^1.16.1",
+    "uuid": "^8.3.0"
   },
   "description": "",
   "devDependencies": {

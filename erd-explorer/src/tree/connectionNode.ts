@@ -26,16 +26,17 @@ export class ConnectionNode implements INode {
     return {
       label: label,
       collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-      contextValue: "erd-explorer.tree.connection",
+      contextValue: "tarkalabs-postgresql.tree.connection",
       command: {
         title: 'select-database',
-        command: 'erd-explorer.setActiveConnection',
+        command: 'tarkalabs-postgresql.setActiveConnection',
         arguments: [ this.connection ]
       },
       iconPath: {
         light: path.join(__dirname, '../../resources/light/server.svg'),
         dark: path.join(__dirname, '../../resources/dark/server.svg')
-      }
+      },
+      tooltip: "ERROR: Cannot Connect To Database"
     };
   }
 

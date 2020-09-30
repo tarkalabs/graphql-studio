@@ -7,10 +7,17 @@ import { INode } from './interfaces/INode';
 import {inject} from 'dotenvrc/envrc';
 import * as fs from 'fs';
 import * as dotenv from 'dotenv'
+import { addConnectionCommand } from './commands/addConnection';
+import { deleteConnectionCommand } from './commands/deleteConnection';
+import { editConnectionCommand } from './commands/editConnection';
+import { Global } from './common/global';
+import { ConfigFS } from './common/configFileSystem';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    Global.context = context;
+
     if (fs.existsSync(vscode.workspace.rootPath + "/.env")) {
         let result = dotenv.config({path: vscode.workspace.rootPath + "/.env"});
         console.log(JSON.stringify(result.parsed));
@@ -29,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
     let treeProvider: PostgreSQLTreeDataProvider = PostgreSQLTreeDataProvider.getInstance(context);
 
     let disposable = vscode.commands.registerCommand(
-        "erd-explorer.viewERD",
+        "tarkalabs-postgresql.viewERD",
         (treeNode?: INode) => {
             let openDialogOptions: vscode.OpenDialogOptions = {
                 canSelectFiles: true,
@@ -45,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('erd-explorer.refresh', async (treeNode: INode) => {
+    disposable = vscode.commands.registerCommand('tarkalabs-postgresql.refresh', async (treeNode: INode) => {
         const tree = PostgreSQLTreeDataProvider.getInstance();
         tree.refresh(treeNode);
 
@@ -55,6 +62,21 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand("editor.action.showReferences", editor.document.uri.fsPath, editor.selection.active, []);
     });
     context.subscriptions.push(disposable);
+
+    let addConnectionCommandInstance = new addConnectionCommand();
+    disposable = vscode.commands.registerCommand('tarkalabs-postgresql.addConnection', addConnectionCommandInstance.run, addConnectionCommandInstance);
+    context.subscriptions.push(disposable);
+    
+    let editConnectionCommandInstance = new editConnectionCommand();
+    disposable = vscode.commands.registerCommand('tarkalabs-postgresql.editConnection', editConnectionCommandInstance.run, editConnectionCommandInstance);
+    context.subscriptions.push(disposable);
+    
+    let deleteConnectionCommandInstance = new deleteConnectionCommand();
+    disposable = vscode.commands.registerCommand('tarkalabs-postgresql.deleteConnection', deleteConnectionCommandInstance.run, deleteConnectionCommandInstance);
+    context.subscriptions.push(disposable);
+
+    const configFS = new ConfigFS();
+    context.subscriptions.push(vscode.workspace.registerFileSystemProvider('postgres-config', configFS, {isCaseSensitive: true}));
 }
 
 // this method is called when your extension is deactivated

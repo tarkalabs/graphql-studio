@@ -24,10 +24,10 @@ export class SchemaNode implements INode {
     return {
       label: this.treeSchema.schemaName,
       collapsibleState: TreeItemCollapsibleState.Collapsed,
-      contextValue: 'erd-explorer.tree.schema',
+      contextValue: 'tarkalabs-postgresql.tree.schema',
       command: {
         title: 'select-database',
-        command: 'erd-explorer.setActiveConnection',
+        command: 'tarkalabs-postgresql.setActiveConnection',
         arguments: [ this.connection ]
       },
       iconPath: {

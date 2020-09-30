@@ -36,7 +36,7 @@ export class ColumnNode implements INode {
       label,
       tooltip,
       collapsibleState: TreeItemCollapsibleState.None,
-      contextValue: 'erd-explorer.tree.column',
+      contextValue: 'tarkalabs-postgresql.tree.column',
       iconPath: {
         light: path.join(__dirname, `../../resources/light/${icon}.svg`),
         dark: path.join(__dirname, `../../resources/dark/${icon}.svg`)
