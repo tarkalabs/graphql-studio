@@ -33,19 +33,25 @@ body.vscode-light {
     }
     background-color: var(--vscode-editor-background);
     .root-table {
-        fill: rgb(142, 240, 255) !important;
+        fill: rgb(149, 149, 149) !important;
+        stroke: black !important;
+        stroke-width: 2px;
+    }
+
+    .leaf {
+        fill: rgb(149, 149, 149) !important;
         stroke: black !important;
         stroke-width: 2px;
     }
     
     .expanded {
-        fill: rgb(129, 255, 129) !important;
+        fill: rgb(142, 240, 255) !important;
         stroke: black !important;
         stroke-width: 2px;
     }
     
     .not-expanded {
-        fill: rgb(255, 126, 126) !important;
+        fill: rgb(142, 240, 255) !important;
         stroke: black !important;
         stroke-width: 2px;
     }
@@ -78,20 +84,26 @@ body.vscode-dark {
     }
     background-color: var(--vscode-editor-background);
     .root-table {
-        fill: rgb(142, 240, 255) !important;
-        stroke: blue !important;
+        fill: rgb(149, 149, 149) !important;
+        stroke: gray !important;
         stroke-width: 2px;
     }
     
     .expanded {
-        fill: rgb(129, 255, 129) !important;
-        stroke: green !important;
+        fill: rgb(142, 240, 255) !important;
+        stroke: blue !important;
+        stroke-width: 2px;
+    }
+
+    .leaf {
+        fill: rgb(149, 149, 149) !important;
+        stroke: gray !important;
         stroke-width: 2px;
     }
     
     .not-expanded {
-        fill: rgb(255, 126, 126) !important;
-        stroke: red !important;
+        fill: rgb(142, 240, 255) !important;
+        stroke: blue !important;
         stroke-width: 2px;
     }
     
@@ -129,19 +141,25 @@ body.vscode-high-contrast {
     background-color: var(--vscode-editor-background);
     .root-table {
         fill: rgb(0, 0, 0) !important;
+        stroke: white !important;
+        stroke-width: 2px;
+    }
+
+    .leaf {
+        fill: rgb(0, 0, 0) !important;
+        stroke: white !important;
+        stroke-width: 2px;
+    }
+
+    .expanded {
+        fill: rgb(0, 0, 0) !important;
         stroke: orange !important;
         stroke-width: 2px;
     }
     
-    .expanded {
-        fill: rgb(0, 0, 0) !important;
-        stroke: rgb(54, 255, 54) !important;
-        stroke-width: 2px;
-    }
-    
     .not-expanded {
-        fill: black;
-        stroke: red !important;
+        fill: rgb(0, 0, 0) !important;
+        stroke: orange !important;
         stroke-width: 2px;
     }
     

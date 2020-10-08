@@ -22,6 +22,7 @@ let relationships: Set<string> = new Set(); // Set of all relationships
 let activeRelationships: Set<string> = new Set(); // Set of rendered relationships
 let tables: Set<string> = new Set(); // Set of all tables
 let activeTables: { [tableName: string]: boolean } = {}; // Dictionary of rendered tables, true = expanded, false = not expanded
+let leafTables: { [tableName: string]: boolean } = {};
 let tableRelationships: { [tableName: string]: string[] } = {}; // Map for each table identifying their relationships
 let rootTable = ""; // Root table is defined when selecting an expansion root. It prevents collapsing root nodes
 
@@ -62,6 +63,7 @@ function parseModel() {
   activeRelationships = new Set(); 
   tables = new Set(); 
   activeTables = {}; 
+  leafTables = {};
   tableRelationships = {}; 
   rootTable = ""; 
   $('ol').html("");
@@ -126,12 +128,17 @@ function load(target: string) {
 
     activeRelationships = new Set(relationships.keys());
     tables.forEach(table => {
-      activeTables[table] = true;
+      if (tableRelationships[table].length == 1) {
+        leafTables[table] = true;
+      } else {
+        activeTables[table] = true;
+      }
     })
     rootTable = "";
   } else {
     // Reset active table/relationship list
     activeTables = {};
+    leafTables = {};
     activeRelationships = new Set();
 
     rootTable = target;
@@ -168,6 +175,9 @@ var refresh = function () {
     if (table == rootTable || rootTable == "") {
       let elementSelector = "g#" + table;
       $(elementSelector).children(":first-child").addClass('root-table');
+    } else if (leafTables[table] == true) {
+      let elementSelector = "g#" + table;
+      $(elementSelector).children(":first-child").addClass('leaf');
     } else if (activeTables[table] == false) {
       let elementSelector = "g#" + table;
       $(elementSelector).children(":first-child").addClass('not-expanded');
@@ -204,7 +214,7 @@ function tableClick(e) {
       // If table is active and not expanded then expand, otherwise collapse
       if (activeTables[id] == false) {
         expand(id);
-      } else {
+      } else if (activeTables[id] == true) {
         collapse(id);
       }
       refresh();
@@ -247,7 +257,12 @@ function expand(id) {
         }
       });
       if (isExpanded) {
-        activeTables[table] = true;
+        if (tableRelationships[table].length == 1) {
+          leafTables[table] = true;
+          delete activeTables[table];
+        } else {
+          activeTables[table] = true;
+        }
       }
     }
   });
@@ -276,6 +291,15 @@ function collapse(id) {
         let other = (table == t1)? t2: t1;
 
         log(table + " " + other + ":" + activeTables[other]);
+
+        if (tableRelationships[other].length == 1) {
+          if (other != rootTable) {
+            delete leafTables[other];
+            activeRelationships.delete(relationship);
+          } else {
+            orphanTable = false;
+          }
+        }
 
         if (activeTables[other] == true) {
           orphanTable = false;

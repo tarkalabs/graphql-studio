@@ -90,11 +90,6 @@
         "category": "PostgreSQLExplorer"
       },
       {
-        "command": "tarkalabs-postgresql.renameConnection",
-        "title": "Rename Connection",
-        "category": "PostgreSQLExplorer"
-      },
-      {
         "command": "tarkalabs-postgresql.editConnection",
         "title": "Edit Connection",
         "category": "PostgreSQLExplorer"
@@ -136,11 +131,6 @@
           "group": "tarkalabs-postgres@2"
         },
         {
-          "command": "tarkalabs-postgresql.renameConnection",
-          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.connection",
-          "group": "tarkalabs-postgres@2"
-        },
-        {
           "command": "tarkalabs-postgresql.viewERD",
           "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.schema",
           "group": "tarkalabs-postgres@1"
@@ -158,11 +148,6 @@
         {
           "command": "tarkalabs-postgresql.viewERD",
           "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.function-folder",
-          "group": "tarkalabs-postgres@1"
-        },
-        {
-          "command": "tarkalabs-postgresql.refresh",
-          "when": "view == tarkalabs-postgres && viewItem == tarkalabs-postgresql.tree.connection",
           "group": "tarkalabs-postgres@1"
         },
         {

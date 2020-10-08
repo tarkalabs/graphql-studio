@@ -55,11 +55,6 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('tarkalabs-postgresql.refresh', async (treeNode: INode) => {
         const tree = PostgreSQLTreeDataProvider.getInstance();
         tree.refresh(treeNode);
-
-        const editor = vscode.window.activeTextEditor;
-        console.log(editor.document.uri.fsPath);
-        console.log(editor.selection.active);
-        vscode.commands.executeCommand("editor.action.showReferences", editor.document.uri.fsPath, editor.selection.active, []);
     });
     context.subscriptions.push(disposable);
 
