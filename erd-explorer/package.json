@@ -214,7 +214,7 @@
     "dotenvrc": "^1.0.1",
     "jquery": "^3.5.1",
     "keytar": "^6.0.1",
-    "mermaid": "^8.5.2",
+    "mermaid": "^10.0.0",
     "pg-connection-string": "^2.3.0",
     "popper.js": "^1.16.1",
     "uuid": "^8.3.0"
